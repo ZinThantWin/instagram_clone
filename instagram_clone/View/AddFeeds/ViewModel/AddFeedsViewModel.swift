@@ -1,18 +1,18 @@
-//
-//  AddFeedsViewModel.swift
-//  instagram_clone
-//
-//  Created by ကင်ဇို on 29/08/2024.
-//
+import Foundation
+import PhotosUI
 
-import SwiftUI
-
-struct AddFeedsViewModel: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+final class AddFeedsViewModel : ObservableObject {
+    @Published var selectedImage : UIImage?
+    @Published var selectedImageInData : Data?
+    @Published var title : String = "fixing"
+    @Published var content : String = "image issue"
+    
+    func uploadImage()async{
+        do {
+            let response : Any = try await ApiService.shared.apiUploadImage(to: ApiEndPoints.posts, imageData: selectedImageInData!, imageName: "image", title: title, content: content, as: AddFeedsModel.self)
+            superPrint("image upload success \(response)")
+        } catch{
+            superPrint("image upload error \(error)" )
+        }
     }
-}
-
-#Preview {
-    AddFeedsViewModel()
 }

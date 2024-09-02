@@ -2,6 +2,7 @@ import Foundation
 
 final class UserViewModel : ObservableObject {
     @Published var userList : UserModelList?
+    @Published var searchText : String  = ""
     
     func getAllUserProfiles()async {
         do{

@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct LoginButton: View {
+    @EnvironmentObject private var vm : LoginViewModel
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        AuthActionButton(buttonText: "Log in", loading: vm.loading,vPadding: 8, action: vm.LoginUser)
     }
 }
 

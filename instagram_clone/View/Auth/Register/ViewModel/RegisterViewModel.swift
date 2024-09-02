@@ -1,8 +1,44 @@
-//
-//  RegisterViewModel.swift
-//  instagram_clone
-//
-//  Created by ကင်ဇို on 20/08/2024.
-//
+import SwiftUI
+import Combine
 
-import Foundation
+final class RegisterViewModel: ObservableObject {
+    @Published var userName: String = ""
+    @Published var userEmail: String = ""
+    @Published var userPassword: String = ""
+    @Published var loading: Bool = false
+    @Published var registerSuccess : Bool = false
+    
+    func resetValues() {
+        userName = ""
+        userEmail = ""
+        userPassword = ""
+        loading = false
+        registerSuccess = false
+    }
+    
+    @MainActor
+    func registerUser() async {
+        loading = true
+        
+        let body = ["name": userName, "email": userEmail, "password": userPassword]
+        
+        superPrint(body)
+        
+        do{
+            let response : Any = try await ApiService.shared.apiPostCall(to : ApiEndPoints.registerUser,body: body, as: RegisterModel.self,xNeedToken: false);
+            superPrint(response)
+            registerSuccess = true
+            await MainActor.run {
+                resetValues()
+            }
+        }catch{
+            await MainActor.run {
+                resetValues()
+            }
+            superPrint(error)
+        }
+        
+    }
+
+
+}

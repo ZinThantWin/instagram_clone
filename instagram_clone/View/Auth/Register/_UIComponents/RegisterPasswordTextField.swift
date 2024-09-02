@@ -8,11 +8,8 @@
 import SwiftUI
 
 struct RegisterPasswordTextField: View {
+    @EnvironmentObject private var vm : RegisterViewModel
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        AuthTextField(hintText: "Password", text: $vm.userPassword)
     }
-}
-
-#Preview {
-    RegisterPasswordTextField()
 }

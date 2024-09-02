@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+struct  RegisterModel : Codable {
+    let id : Int
+    let name : String
+}

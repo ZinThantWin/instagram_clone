@@ -1,18 +1,21 @@
-//
-//  ToastView.swift
-//  instagram_clone
-//
-//  Created by ကင်ဇို on 22/08/2024.
-//
-
 import SwiftUI
 
 struct ToastView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
+    let message: String
+    @Binding var isPresented: Bool
 
-#Preview {
-    ToastView()
+    var body: some View {
+        VStack {
+            if isPresented {
+                Text(message)
+                    .padding()
+                    .background(Color.black.opacity(0.7))
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+                    .transition(.opacity)
+                    .animation(.easeInOut, value: isPresented)
+            }
+        }
+        .padding()
+    }
 }

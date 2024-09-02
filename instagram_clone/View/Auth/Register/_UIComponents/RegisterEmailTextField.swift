@@ -8,11 +8,14 @@
 import SwiftUI
 
 struct RegisterEmailTextField: View {
+    @EnvironmentObject private var vm : RegisterViewModel
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack{
+            AuthTextField(hintText: "Email", text: $vm.userEmail)
+        }
     }
 }
 
 #Preview {
-    RegisterEmailTextField()
+    RegisterEmailTextField().environmentObject(RegisterViewModel())
 }

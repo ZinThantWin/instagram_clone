@@ -8,11 +8,8 @@
 import SwiftUI
 
 struct RegisterButton: View {
+    @EnvironmentObject private var vm : RegisterViewModel
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        AuthActionButton(buttonText: "Register", loading: vm.loading, action: vm.registerUser)
     }
-}
-
-#Preview {
-    RegisterButton()
 }

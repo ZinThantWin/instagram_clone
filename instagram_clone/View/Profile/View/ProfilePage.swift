@@ -8,11 +8,21 @@
 import SwiftUI
 
 struct ProfilePage: View {
+    @EnvironmentObject private var vm : ProfileViewModel
+    @EnvironmentObject private var loginVM : LoginViewModel
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ZStack{
+            if let profile = vm.userDetail {
+                ProfileDetailView(profile: profile)
+            }else {
+                Text("fetching data")
+            }
+        }
+        .onAppear{
+            Task{
+                await vm.getUserProfile(id: "77")
+            }
+        }
     }
-}
-
-#Preview {
-    ProfilePage()
+    
 }

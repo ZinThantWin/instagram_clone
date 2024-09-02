@@ -1,18 +1,14 @@
-//
-//  EachTabIcon.swift
-//  instagram_clone
-//
-//  Created by ကင်ဇို on 23/08/2024.
-//
-
 import SwiftUI
 
-struct EachTabIcon: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
+struct EachTabIcon<Content: View>: View {
+    var content: Content
+    var action: () -> Void = {}
 
-#Preview {
-    EachTabIcon()
+    var body: some View {
+        Button(action: action) {
+            content
+        }
+        .foregroundColor(.white)
+        .frame(maxWidth: .infinity)
+    }
 }

@@ -21,6 +21,7 @@ struct UserListPage: View {
                         .frame(maxWidth: .infinity,minHeight: 500)
                 }
             }
+            .searchable(text: $vm.searchText)
             .navigationTitle("Profiles")
             .onAppear {
                 Task {

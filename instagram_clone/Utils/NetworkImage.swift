@@ -1,18 +1,24 @@
-//
-//  NetworkImage.swift
-//  instagram_clone
-//
-//  Created by ကင်ဇို on 24/08/2024.
-//
-
 import SwiftUI
 
 struct NetworkImage: View {
+    var imageUrlInString : String
+    var imageHeight : Double
+    var imageWidth : Double 
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        AsyncImage(url: URL(string: (imageUrlInString))){phase in
+            switch phase {
+            case .empty:
+                ProgressView()
+            case .success(let image):
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(maxWidth: imageWidth , maxHeight: imageHeight )
+                    .clipped()
+            case .failure:
+                EmptyView()
+            default:
+                ProgressView()
+            }}
     }
-}
-
-#Preview {
-    NetworkImage()
 }

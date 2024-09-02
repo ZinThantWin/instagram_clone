@@ -6,3 +6,18 @@
 //
 
 import Foundation
+
+
+class ApiEndPoints {
+    
+    // Auth
+    static let registerUser : String = "auth/register"
+    static let validateUser : String = "auth/validate"
+    static let logInUser : String = "auth/login"
+    
+    // Feed
+    static let posts : String = "posts"
+    
+    // Users
+    static let users : String = "users"
+}

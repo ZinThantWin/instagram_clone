@@ -1,18 +1,12 @@
-//
-//  AuthBGView.swift
-//  instagram_clone
-//
-//  Created by ကင်ဇို on 21/08/2024.
-//
-
 import SwiftUI
 
-struct AuthBGView: View {
+struct AuthBGView : View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Rectangle()
+            .fill(LinearGradient(
+                gradient: Gradient(colors: [AppColors.authBGImageGradient1, AppColors.authBGImageGradient2,AppColors.authBGImageGradient3]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )).ignoresSafeArea()
     }
-}
-
-#Preview {
-    AuthBGView()
 }

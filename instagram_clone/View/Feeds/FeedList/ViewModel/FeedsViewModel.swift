@@ -1,8 +1,53 @@
-//
-//  FeedsViewModel.swift
-//  instagram_clone
-//
-//  Created by ကင်ဇို on 23/08/2024.
-//
-
 import Foundation
+
+final class FeedsViewModel : ObservableObject{
+    @Published var allFeedList : FeedListModel?
+    @Published var selectedFeed : FeedModel?
+    @Published var showCommentSheet : Bool = false
+    @Published var showProfileFullScreenCover : Bool = false
+    @Published var selectedProfileDetail : ProfileModel?
+    private var profileVM: ProfileViewModel
+    
+    init(profileVM: ProfileViewModel) {
+        self.profileVM = profileVM
+    }
+    
+    func getSelectedProfileDetail(id : String)async {
+        let response : ProfileModel?  = await profileVM.getUserProfile(id: id)
+        await MainActor.run { 
+            selectedProfileDetail = response
+            if selectedProfileDetail != nil {
+                showProfileFullScreenCover = true
+            }
+        }
+    }
+    
+    func getAllFeedList () async {
+        do{
+            let tempList : FeedListModel? = try await ApiService.shared.apiGetCall(from: ApiEndPoints.posts, as: FeedListModel.self,xNeedToken: true )
+            assignRandomRanking(to: tempList)
+            await MainActor.run {[weak self] in
+                self?.allFeedList = tempList
+            }
+        }catch{
+            superPrint("all posts failed \(error)")
+        }
+    }
+    
+    func onTapViewComments(_ selectedFeed : FeedModel ){
+        self.selectedFeed = selectedFeed
+        showCommentSheet = true
+    }
+    
+    private func assignRandomRanking(to feedList: FeedListModel?) {
+        // Ensure feedList is not nil
+        guard var feedList = feedList else { return }
+        
+        // Loop through each feed and assign a random ranking if needed
+        for index in feedList.data.indices {
+            if feedList.data[index].ranking == nil {
+                feedList.data[index].ranking = Int.random(in: 1...3)
+            }
+        }
+    }
+}
