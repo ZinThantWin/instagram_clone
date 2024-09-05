@@ -27,7 +27,7 @@ class ApiService {
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.timeoutInterval = 30.0 // Example timeout interval
+        request.timeoutInterval = 30.0
 
         if xNeedToken {
             request.setValue("Bearer \(apiToken)", forHTTPHeaderField: "Authorization")
@@ -62,7 +62,7 @@ class ApiService {
         } catch {
             superPrint("unexpected error! \(error)")
             throw ApiError.unknownError
-        }
+        } 
     }
     
     
@@ -78,7 +78,7 @@ class ApiService {
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.timeoutInterval = 30.0 // Example timeout interval
+        request.timeoutInterval = 30.0
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         if xNeedToken {

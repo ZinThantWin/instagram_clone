@@ -9,6 +9,7 @@ final class TokenManager {
     
     // Save token to UserDefaults
     func saveToken(_ token: String) {
+        superPrint("saving token")
         UserDefaults.standard.set(token, forKey: tokenKey)
     }
     

@@ -3,12 +3,15 @@ import SwiftUI
 struct NetworkImage: View {
     var imageUrlInString : String
     var imageHeight : Double
-    var imageWidth : Double 
+    var imageWidth : Double
     var body: some View {
         AsyncImage(url: URL(string: (imageUrlInString))){phase in
             switch phase {
             case .empty:
-                ProgressView()
+                Rectangle()
+                    .frame(width: imageWidth,height: imageHeight)
+                    .foregroundColor(.gray)
+                    .redacted(reason: .placeholder)
             case .success(let image):
                 image
                     .resizable()
@@ -16,9 +19,15 @@ struct NetworkImage: View {
                     .frame(maxWidth: imageWidth , maxHeight: imageHeight )
                     .clipped()
             case .failure:
-                EmptyView()
+                Rectangle()
+                    .frame(width: imageWidth,height: imageHeight)
+                    .foregroundColor(.gray)
+                    .redacted(reason: .placeholder)
             default:
-                ProgressView()
+                Rectangle()
+                    .frame(width: imageWidth,height: imageHeight)
+                    .foregroundColor(.gray)
+                    .redacted(reason: .placeholder)
             }}
     }
 }
