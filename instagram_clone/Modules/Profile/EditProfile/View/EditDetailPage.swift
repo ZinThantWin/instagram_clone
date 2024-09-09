@@ -8,52 +8,51 @@
 import SwiftUI
 
 struct EditDetailPage: View {
+    @EnvironmentObject private var vm : ProfileViewModel
     @Environment(\.presentationMode) var presentationMode
     var body: some View {
-        Text("Detail")
-//        VStack{
-//            if let model = vm.selectedEditDetail {
-//                TextField(text: Binding(
-//                    get: { model.value },
-//                    set: { vm.selectedEditDetail?.value = $0 }
-//                )) {
-//                    Text(model.title)
-//                } .overlay{
-//                    textfieldClearButton
-//                }
-//            }
-//            
-//            Divider()
-//            Text(vm.selectedEditDetail!.shortDes)
-//            Spacer()
-//        }
-//        .navigationTitle(vm.selectedEditDetail!.title)
-//        .toolbar{
-//            ToolbarItem {
-//                Button{
-//                    presentationMode.wrappedValue.dismiss()
-//                }label: {
-//                    Text("Done")
-//                }
-//            }
-//        }
+        VStack{
+            Divider()
+            TextField(text: Binding(
+                get: { vm.selectedDetailEdit.value },
+                set: { vm.selectedDetailEdit.value = $0 }
+            )) {
+                Text(vm.selectedDetailEdit.title)
+            } .overlay{
+                textfieldClearButton
+            }.padding()
+            
+            Divider()
+            Text(vm.selectedDetailEdit.shortDes)
+            Spacer()
+        }
+        .navigationTitle(vm.selectedDetailEdit.title)
+        .toolbar{
+            ToolbarItem {
+                Button{
+                    presentationMode.wrappedValue.dismiss()
+                }label: {
+                    Text("Done")
+                }
+            }
+        }
     }
 }
 
-//extension EditDetailPage{
-//    private var textfieldClearButton : some View{
-//        HStack {
-//            Spacer()
-//            
-//            if !vm.selectedEditDetail!.value.isEmpty {
-//                Button(action: {
-//                    vm.selectedEditDetail!.value  = ""
-//                }) {
-//                    Image(systemName: "xmark.circle.fill")
-//                        .foregroundColor(.gray)
-//                }
-//                .padding(.trailing, 8)
-//            }
-//        }
-//    }
-//}
+extension EditDetailPage{
+    private var textfieldClearButton : some View{
+        HStack {
+            Spacer()
+            
+            if !vm.selectedDetailEdit.value.isEmpty {
+                Button(action: {
+                    vm.selectedDetailEdit.value  = ""
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.gray)
+                }
+                .padding(.trailing, 8)
+            }
+        }
+    }
+}

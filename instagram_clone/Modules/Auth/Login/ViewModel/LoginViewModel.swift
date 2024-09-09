@@ -1,8 +1,8 @@
 import Foundation
 
 final class LoginViewModel: ObservableObject {
-    @Published var loginEmail : String = "kozin@gmail.com"
-    @Published var loginPassword : String = "kozin"
+    @Published var loginEmail : String = "password@gmail.com"
+    @Published var loginPassword : String = "password"
     @Published var loading : Bool = false
     @Published var loginSuccess : Bool = false
     @Published var logInModel : LoginModel?
@@ -44,7 +44,6 @@ final class LoginViewModel: ObservableObject {
             await MainActor.run { [weak self] in 
                 self?.userProfile = response
                 self?.profileVM.userDetail = response
-                superPrint(self?.profileVM.userDetail?.posts.first)
             }
         }catch {
             superPrint("update me error \(error)")

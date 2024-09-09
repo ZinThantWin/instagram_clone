@@ -4,11 +4,28 @@ struct FeedListModel : Codable {
     var data : [FeedModel]
 }
 
+struct AllReactionModel : Codable {
+    let count : Int?
+    let users : [AuthorModel]
+}
+
+struct ReactionModel : Codable {
+    let all : AllReactionModel
+    let like, love , haha , sad : [AuthorModel]
+    let angry : [AuthorModel]
+}
+
 struct Comment : Codable {
     let id : Int
     let content: String
-    let authorName : String
-    let updatedAt : String 
+    let author : AuthorModel
+    let updatedAt : String?
+}
+
+struct AuthorModel : Codable {
+    let id : Int
+    let name : String
+    let image : String?
 }
 
 struct FeedModel: Codable {
@@ -18,12 +35,14 @@ struct FeedModel: Codable {
     let authorId: Int?
     let authorName : String?
     let image: String?
-    let createdAt: String
+    let createdAt: String?
     let reactionCount: Int?
     let comments : [Comment]
     var ranking : Int? = Int.random(in: 1...3)
+    let reactions : ReactionModel?
+    var userReactonType : String?
 }
 
 struct sampleFeedModel {
-    static let sampleFeedModel = FeedModel(id: 1, title: "sample title", content: "This is sample content", authorId: 1, authorName: "dummy author", image: "/uploads/1723630534266.jpg", createdAt: "2024-08-14T10:15:34.589Z", reactionCount: 3,comments: [Comment(id: 1, content: "dummy comment", authorName: "dummny commentor", updatedAt: "2024-08-14T10:17:16.205Z"),Comment(id: 2, content: "dummy comment2", authorName: "dummny commentor2", updatedAt: "2024-08-14T20:17:16.205Z"),Comment(id: 3, content: "dummy comment3", authorName: "dummny commentor3", updatedAt: "2024-08-14T20:17:16.205Z"),Comment(id: 4, content: "dummy comment4", authorName: "dummny commentor4", updatedAt: "2024-08-14T20:17:16.205Z"),Comment(id: 5, content: "dummy comment5", authorName: "dummny commentor5", updatedAt: "2024-08-14T20:17:16.205Z")])
+    static let sampleFeedModel = FeedModel(id: 1, title: "sample title", content: "This is sample content", authorId: 1, authorName: "dummy author", image: "/uploads/1723630534266.jpg", createdAt: "2024-08-14T10:15:34.589Z", reactionCount: 3,comments: [Comment(id: 10, content: "ဖုန်ရှုလိုက်", author: AuthorModel(id: 1, name: "Dummy commenter", image: nil), updatedAt: "2024-09-07T04:36:28.272Z")],reactions:  ReactionModel(all: AllReactionModel(count: 1, users: [AuthorModel(id: 1, name: "", image: nil )]), like: [AuthorModel(id: 1, name: "", image: nil )], love: [AuthorModel(id: 1, name: "", image: nil )], haha: [AuthorModel(id: 1, name: "", image: nil )], sad: [AuthorModel(id: 1, name: "", image: nil )],angry: [AuthorModel(id: 1, name: "", image: nil )]))
 }

@@ -27,7 +27,13 @@
 		534E0C422C8818D500D8BA40 /* Shimmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534E0C412C8818D500D8BA40 /* Shimmer.swift */; };
 		534E0C452C88206A00D8BA40 /* EditProfilePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534E0C442C88206A00D8BA40 /* EditProfilePage.swift */; };
 		534E0C4E2C8856B700D8BA40 /* EditDetailPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534E0C4D2C8856B700D8BA40 /* EditDetailPage.swift */; };
-		539CBEFE2C771E60005F81A9 /* EachFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539CBEFD2C771E60005F81A9 /* EachFeed.swift */; };
+		534E0C532C898E1100D8BA40 /* EditProfileDetailModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534E0C522C898E1100D8BA40 /* EditProfileDetailModel.swift */; };
+		534E0C552C898E5000D8BA40 /* AllEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534E0C542C898E5000D8BA40 /* AllEnums.swift */; };
+		534E0C572C89A1A900D8BA40 /* EditProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534E0C562C89A1A900D8BA40 /* EditProfileModel.swift */; };
+		534E0C592C89BE0800D8BA40 /* ConfirmPasswordSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534E0C582C89BE0800D8BA40 /* ConfirmPasswordSheet.swift */; };
+		534E0C5C2C8EA94300D8BA40 /* ReactionResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534E0C5B2C8EA94300D8BA40 /* ReactionResponseModel.swift */; };
+		534E0C5E2C8EB5AD00D8BA40 /* CustomDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534E0C5D2C8EB5AD00D8BA40 /* CustomDecoder.swift */; };
+		539CBEFE2C771E60005F81A9 /* EachFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539CBEFD2C771E60005F81A9 /* EachFeedView.swift */; };
 		539CBF002C771E90005F81A9 /* FeedListPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539CBEFF2C771E90005F81A9 /* FeedListPage.swift */; };
 		539CBF022C771EA6005F81A9 /* FeedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539CBF012C771EA6005F81A9 /* FeedModel.swift */; };
 		539CBF052C772DE1005F81A9 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539CBF042C772DE1005F81A9 /* ToastView.swift */; };
@@ -81,7 +87,13 @@
 		534E0C412C8818D500D8BA40 /* Shimmer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shimmer.swift; sourceTree = "<group>"; };
 		534E0C442C88206A00D8BA40 /* EditProfilePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfilePage.swift; sourceTree = "<group>"; };
 		534E0C4D2C8856B700D8BA40 /* EditDetailPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDetailPage.swift; sourceTree = "<group>"; };
-		539CBEFD2C771E60005F81A9 /* EachFeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EachFeed.swift; sourceTree = "<group>"; };
+		534E0C522C898E1100D8BA40 /* EditProfileDetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileDetailModel.swift; sourceTree = "<group>"; };
+		534E0C542C898E5000D8BA40 /* AllEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllEnums.swift; sourceTree = "<group>"; };
+		534E0C562C89A1A900D8BA40 /* EditProfileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileModel.swift; sourceTree = "<group>"; };
+		534E0C582C89BE0800D8BA40 /* ConfirmPasswordSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmPasswordSheet.swift; sourceTree = "<group>"; };
+		534E0C5B2C8EA94300D8BA40 /* ReactionResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionResponseModel.swift; sourceTree = "<group>"; };
+		534E0C5D2C8EB5AD00D8BA40 /* CustomDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDecoder.swift; sourceTree = "<group>"; };
+		539CBEFD2C771E60005F81A9 /* EachFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EachFeedView.swift; sourceTree = "<group>"; };
 		539CBEFF2C771E90005F81A9 /* FeedListPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedListPage.swift; sourceTree = "<group>"; };
 		539CBF012C771EA6005F81A9 /* FeedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedModel.swift; sourceTree = "<group>"; };
 		539CBF042C772DE1005F81A9 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
@@ -214,6 +226,8 @@
 				53DD5DAE2C818BAF00060F9B /* AppFunctions.swift */,
 				533C58D82C822C9F00A89380 /* AppConstants.swift */,
 				534E0C412C8818D500D8BA40 /* Shimmer.swift */,
+				534E0C542C898E5000D8BA40 /* AllEnums.swift */,
+				534E0C5D2C8EB5AD00D8BA40 /* CustomDecoder.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -259,6 +273,7 @@
 		534E0C432C88205600D8BA40 /* EditProfile */ = {
 			isa = PBXGroup;
 			children = (
+				534E0C512C898DF000D8BA40 /* Model */,
 				534E0C462C88206D00D8BA40 /* View */,
 			);
 			path = EditProfile;
@@ -269,8 +284,18 @@
 			children = (
 				534E0C442C88206A00D8BA40 /* EditProfilePage.swift */,
 				534E0C4D2C8856B700D8BA40 /* EditDetailPage.swift */,
+				534E0C582C89BE0800D8BA40 /* ConfirmPasswordSheet.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		534E0C512C898DF000D8BA40 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				534E0C522C898E1100D8BA40 /* EditProfileDetailModel.swift */,
+				534E0C562C89A1A900D8BA40 /* EditProfileModel.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		539CBEF52C771DF1005F81A9 /* Feeds */ = {
@@ -303,6 +328,7 @@
 			isa = PBXGroup;
 			children = (
 				539CBF012C771EA6005F81A9 /* FeedModel.swift */,
+				534E0C5B2C8EA94300D8BA40 /* ReactionResponseModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -319,7 +345,7 @@
 		539CBEFC2C771E51005F81A9 /* UI_Components */ = {
 			isa = PBXGroup;
 			children = (
-				539CBEFD2C771E60005F81A9 /* EachFeed.swift */,
+				539CBEFD2C771E60005F81A9 /* EachFeedView.swift */,
 				539CBF0B2C783EEA005F81A9 /* EachTabIcon.swift */,
 				53DD5DB02C81A0FA00060F9B /* CommentsSheet.swift */,
 			);
@@ -540,27 +566,33 @@
 				53B06D4B2C75AC4B0054EAC1 /* AuthBGView.swift in Sources */,
 				53DD5DAD2C803BEF00060F9B /* AddFeedsModel.swift in Sources */,
 				53DD5DAF2C818BAF00060F9B /* AppFunctions.swift in Sources */,
+				534E0C5E2C8EB5AD00D8BA40 /* CustomDecoder.swift in Sources */,
 				53E445BF2C79ABB5003D50AA /* NetworkImage.swift in Sources */,
 				53452D382C7344C400C3E406 /* instagram_cloneApp.swift in Sources */,
+				534E0C592C89BE0800D8BA40 /* ConfirmPasswordSheet.swift in Sources */,
 				539CBF0A2C774627005F81A9 /* TokenManager.swift in Sources */,
 				534E0C422C8818D500D8BA40 /* Shimmer.swift in Sources */,
 				53DD5DB12C81A0FA00060F9B /* CommentsSheet.swift in Sources */,
 				53DD5DBD2C81D73E00060F9B /* ProfileModel.swift in Sources */,
 				534E0C4E2C8856B700D8BA40 /* EditDetailPage.swift in Sources */,
 				53452D5B2C7476F400C3E406 /* RegisterViewModel.swift in Sources */,
+				534E0C532C898E1100D8BA40 /* EditProfileDetailModel.swift in Sources */,
 				533C58DC2C822D1500A89380 /* ProfileDetailView.swift in Sources */,
 				539CBF082C7745A2005F81A9 /* SplashScreenViewModel.swift in Sources */,
 				539CBF052C772DE1005F81A9 /* ToastView.swift in Sources */,
 				53DD5DB92C81D70800060F9B /* ProfilePage.swift in Sources */,
+				534E0C572C89A1A900D8BA40 /* EditProfileModel.swift in Sources */,
 				53452D4E2C7446B000C3E406 /* ApiService.swift in Sources */,
 				53B06D512C75CDEA0054EAC1 /* AuthActionButton.swift in Sources */,
 				539CBF0C2C783EEA005F81A9 /* EachTabIcon.swift in Sources */,
 				53DD5DBB2C81D71800060F9B /* ProfileViewModel.swift in Sources */,
 				53B06D422C75ABCB0054EAC1 /* LoginViewModel.swift in Sources */,
 				53DD5DA72C803BD000060F9B /* AddFeedsPage.swift in Sources */,
+				534E0C552C898E5000D8BA40 /* AllEnums.swift in Sources */,
 				53DD5DB32C81B74200060F9B /* DummyProfile.swift in Sources */,
 				539CBF0F2C785239005F81A9 /* HomePage.swift in Sources */,
-				539CBEFE2C771E60005F81A9 /* EachFeed.swift in Sources */,
+				539CBEFE2C771E60005F81A9 /* EachFeedView.swift in Sources */,
+				534E0C5C2C8EA94300D8BA40 /* ReactionResponseModel.swift in Sources */,
 				53B06D532C75D2120054EAC1 /* Extensions.swift in Sources */,
 				53B06D4F2C75CB8B0054EAC1 /* LoginPage.swift in Sources */,
 				53452D662C74838500C3E406 /* RegisterNameTextField.swift in Sources */,

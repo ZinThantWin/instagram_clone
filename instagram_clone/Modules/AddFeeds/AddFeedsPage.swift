@@ -13,23 +13,36 @@ struct AddFeedsPage: View {
     @State private var photosPickerItem : PhotosPickerItem?
     var body: some View {
         VStack{
-            PhotosPicker(selection: $photosPickerItem) {
-                Image(systemName: "plus.app")
-            }
             Text("New post")
-            if let selectedImage = vm.selectedImage {
-                Image(uiImage: selectedImage)
-                    .resizable()
-                    .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height * 0.4)
-            }else{
-                Text("No image selected")
-            }
-            Button{
-                Task{
-                    await vm.uploadImage()
+                .font(.title2)
+                .frame(maxWidth: .infinity, maxHeight: 100)
+                .background(Color.black)
+            Spacer()
+            
+            HStack{
+                if let selectedImage = vm.selectedImage {
+                    Image(uiImage: selectedImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height * 0.4)
+                }else{
+                    PhotosPicker(selection: $photosPickerItem) {
+                        Image(systemName: "photo.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 50,height: 50)
+                    }
                 }
-            }label: {
-                Text("Upload")
+                Spacer()
+            }
+            if let _ = vm.selectedImageInData {
+                Button{
+                    Task{
+                        await vm.uploadImage()
+                    }
+                }label: {
+                    Text("Share moment")
+                }
             }
         }
         .onChange(of: photosPickerItem) { oldValue, newValue in

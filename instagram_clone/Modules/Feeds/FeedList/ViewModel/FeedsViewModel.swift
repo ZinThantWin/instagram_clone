@@ -5,6 +5,7 @@ final class FeedsViewModel : ObservableObject{
     @Published var selectedFeed : FeedModel?
     @Published var showCommentSheet : Bool = false
     @Published var showProfileFullScreenCover : Bool = false
+    @Published var showReactionRow : Bool = false
     @Published var selectedProfileDetail : ProfileModel?
     private var profileVM: ProfileViewModel
     
@@ -14,7 +15,7 @@ final class FeedsViewModel : ObservableObject{
     
     func getSelectedProfileDetail(id : String)async {
         let response : ProfileModel?  = await profileVM.getUserProfile(id: id)
-        await MainActor.run { 
+        await MainActor.run {
             selectedProfileDetail = response
             if selectedProfileDetail != nil {
                 showProfileFullScreenCover = true
@@ -37,6 +38,21 @@ final class FeedsViewModel : ObservableObject{
     func onTapViewComments(_ selectedFeed : FeedModel ){
         self.selectedFeed = selectedFeed
         showCommentSheet = true
+    }
+    
+    struct ReactionRequest: Encodable {
+        let postId: Int
+        let reactionType: String
+    }
+    
+    func giveReaction(reactionType: Reaction,postId : Int ) async {
+        let requestBody = ["postId": postId, "reactionType": reactionType.name(for: .reacted)] as [String : Any]
+        do {
+            let _: ReactionResponseModel = try await ApiService.shared.apiPostCallAny(to: ApiEndPoints.reaction, body: requestBody, as: ReactionResponseModel.self, xNeedToken: true)
+            await getAllFeedList()
+        } catch {
+            superPrint(error)
+        }
     }
     
     private func assignRandomRanking(to feedList: FeedListModel?) {

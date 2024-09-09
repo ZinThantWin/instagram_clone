@@ -20,4 +20,7 @@ class ApiEndPoints {
     
     // Users
     static let users : String = "users"
+    
+    // Reactions
+    static let reaction : String = "likes/reactions"
 }

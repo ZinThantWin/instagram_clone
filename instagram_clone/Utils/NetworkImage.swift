@@ -8,10 +8,12 @@ struct NetworkImage: View {
         AsyncImage(url: URL(string: (imageUrlInString))){phase in
             switch phase {
             case .empty:
-                Rectangle()
-                    .frame(width: imageWidth,height: imageHeight)
-                    .foregroundColor(.gray)
-                    .redacted(reason: .placeholder)
+                ProgressView()
+                    .foregroundColor(.primary)
+                //                Rectangle()
+                //                    .frame(width: imageWidth,height: imageHeight)
+                //                    .foregroundColor(.gray)
+                //                    .redacted(reason: .placeholder)
             case .success(let image):
                 image
                     .resizable()
@@ -19,10 +21,10 @@ struct NetworkImage: View {
                     .frame(maxWidth: imageWidth , maxHeight: imageHeight )
                     .clipped()
             case .failure:
-                Rectangle()
-                    .frame(width: imageWidth,height: imageHeight)
-                    .foregroundColor(.gray)
-                    .redacted(reason: .placeholder)
+                Image("noImage")
+                    .aspectRatio(contentMode: .fill)
+                    .frame(maxWidth: imageWidth , maxHeight: imageHeight )
+                    .clipped()
             default:
                 Rectangle()
                     .frame(width: imageWidth,height: imageHeight)

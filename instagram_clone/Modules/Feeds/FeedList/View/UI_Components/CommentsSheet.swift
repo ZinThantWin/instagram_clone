@@ -40,7 +40,7 @@ extension CommentsSheet {
     private var headingBar : some View {
         VStack{
             Rectangle()
-                .frame(width: 50, height: 4)
+                .frame(width: 50, height: 6)
                 .clipShape(.capsule)
                 .foregroundColor(.secondary)
                 .padding(.top,10)
@@ -60,11 +60,13 @@ struct EachComment : View {
             DummyProfile(size: 25,color: .primary)
             VStack(alignment: .leading,spacing: 0){
                 HStack{
-                    Text(comment.authorName)
+                    Text(comment.author.name)
                         .font(.system(size: 14,weight: .semibold))
-                    if let timeStamp = convertDateString(comment.updatedAt){
-                        Text(timeStamp)
-                            .font(.system(size: 13,weight: .regular))
+                    if let dateInString = comment.updatedAt {
+                        if let timeStamp = convertDateString(dateInString){
+                            Text(timeStamp)
+                                .font(.system(size: 13,weight: .regular))
+                        }
                     }
                 }
                 Text(comment.content)

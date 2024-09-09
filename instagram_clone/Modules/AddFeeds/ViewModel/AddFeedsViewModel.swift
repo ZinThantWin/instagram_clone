@@ -4,8 +4,8 @@ import PhotosUI
 final class AddFeedsViewModel : ObservableObject {
     @Published var selectedImage : UIImage?
     @Published var selectedImageInData : Data?
-    @Published var title : String = "Hello"
-    @Published var content : String = "Good morning"
+    @Published var title : String = "hihi"
+    @Published var content : String = "hahaha"
     
     func uploadImage()async{
         do {
