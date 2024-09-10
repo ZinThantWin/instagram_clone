@@ -8,6 +8,7 @@ final class FeedsViewModel : ObservableObject{
     @Published var showReactionRow : Bool = false
     @Published var selectedProfileDetail : ProfileModel?
     private var profileVM: ProfileViewModel
+    @Published var searchFeeds : String = ""
     
     init(profileVM: ProfileViewModel) {
         self.profileVM = profileVM

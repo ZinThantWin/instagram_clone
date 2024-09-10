@@ -8,6 +8,14 @@
 import Foundation
 import SwiftUI
 
+enum Tab {
+    case home
+    case search
+    case add
+    case list
+    case profile
+}
+
 enum EditDetailEnum {
     case name
     case email

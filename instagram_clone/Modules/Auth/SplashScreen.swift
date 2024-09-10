@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct SplashScreen: View {
-    @EnvironmentObject private var viewModel : SplashScreenViewModel
+    @EnvironmentObject private var splashViewModel : SplashScreenViewModel
+    @EnvironmentObject private var homeViewModel : HomeViewModel
     var body: some View {
         Group{
-            if viewModel.isLoggedIn {
+            if splashViewModel.isLoggedIn {
                 HomePage()
             }else{
                 LoginPage()
@@ -19,7 +20,7 @@ struct SplashScreen: View {
         }.onAppear{
 //            TokenManager.shared.deleteToken()
             Task{
-                await viewModel.checkToken()
+                await splashViewModel.checkToken()
             }
         }
     }

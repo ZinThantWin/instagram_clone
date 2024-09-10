@@ -32,8 +32,7 @@ struct FeedModel: Codable {
     let id: Int
     let title: String
     let content: String?
-    let authorId: Int?
-    let authorName : String?
+    let author : AuthorModel?
     let image: String?
     let createdAt: String?
     let reactionCount: Int?
@@ -44,5 +43,5 @@ struct FeedModel: Codable {
 }
 
 struct sampleFeedModel {
-    static let sampleFeedModel = FeedModel(id: 1, title: "sample title", content: "This is sample content", authorId: 1, authorName: "dummy author", image: "/uploads/1723630534266.jpg", createdAt: "2024-08-14T10:15:34.589Z", reactionCount: 3,comments: [Comment(id: 10, content: "ဖုန်ရှုလိုက်", author: AuthorModel(id: 1, name: "Dummy commenter", image: nil), updatedAt: "2024-09-07T04:36:28.272Z")],reactions:  ReactionModel(all: AllReactionModel(count: 1, users: [AuthorModel(id: 1, name: "", image: nil )]), like: [AuthorModel(id: 1, name: "", image: nil )], love: [AuthorModel(id: 1, name: "", image: nil )], haha: [AuthorModel(id: 1, name: "", image: nil )], sad: [AuthorModel(id: 1, name: "", image: nil )],angry: [AuthorModel(id: 1, name: "", image: nil )]))
+    static let sampleFeedModel = FeedModel(id: 1, title: "sample title", content: "This is sample content", author: AuthorModel(id: 23, name: "dummy author", image: ""), image: "/uploads/1723630534266.jpg", createdAt: "2024-08-14T10:15:34.589Z", reactionCount: 3,comments: [Comment(id: 10, content: "ဖုန်ရှုလိုက်", author: AuthorModel(id: 1, name: "Dummy commenter", image: nil), updatedAt: "2024-09-07T04:36:28.272Z")],reactions:  ReactionModel(all: AllReactionModel(count: 1, users: [AuthorModel(id: 1, name: "", image: nil )]), like: [AuthorModel(id: 1, name: "", image: nil )], love: [AuthorModel(id: 1, name: "", image: nil )], haha: [AuthorModel(id: 1, name: "", image: nil )], sad: [AuthorModel(id: 1, name: "", image: nil )],angry: [AuthorModel(id: 1, name: "", image: nil )]))
 }

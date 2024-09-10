@@ -7,6 +7,9 @@ struct EachFeedView : View {
     var onTapReaction : () -> Void
     var onLongPressReaction : () -> Void
     var onReactionSelected: ((Reaction) -> Void)?
+    var onTapEditFeed : (() -> Void)?
+    var onTapDeleteFeed : (() -> Void)?
+    @State var yourFeed : Bool?
     @State private var scale: CGFloat = 1.0
     @Binding var showReactions: Bool
     @State private var showImagePreview: Bool = false
@@ -19,7 +22,7 @@ struct EachFeedView : View {
                     .ignoresSafeArea()
                     .onTapGesture {
                         showReactions = false
-                    } 
+                    }
             }
             VStack(alignment: .leading,spacing: 0){
                 HStack{
@@ -50,7 +53,7 @@ struct EachFeedView : View {
                     }
                     if let content = eachFeed.content {
                         Text(content)
-                            .fontWeight(.semibold)
+                            .fontWeight(.regular)
                     }
                     if !eachFeed.comments.isEmpty {
                         Button{
@@ -62,6 +65,14 @@ struct EachFeedView : View {
                         .padding(.top,2)
                     }
                     
+                    if let dateInString = eachFeed.createdAt {
+                        if let date = convertDateString(dateInString){
+                            Text(date)
+                                .font(.caption)
+                                .fontWeight(.regular)
+                        }
+                    }
+                    
                 }.padding(.horizontal, pagePadding)
             }
             .padding(.top, 30)
@@ -70,6 +81,33 @@ struct EachFeedView : View {
 }
 
 extension EachFeedView {
+    
+    private var menu : some View{
+        Menu{
+            Button{
+                onTapEditFeed?()
+            }label: {
+                HStack{
+                    Image(systemName: "pencil")
+                    Text("Edit")
+                }
+            }
+            Button(role: .destructive){
+                onTapDeleteFeed?()
+            }label: {
+                HStack{
+                    Image(systemName: "trash")
+                    Text("Delete")
+                    
+                }
+            }
+        } label: {
+            Image(systemName: "ellipsis")
+                .foregroundColor(.white)
+                .padding()
+        }
+    }
+    
     private var reactionRow : some View{
         HStack(alignment: .top,spacing: 0){
             if let reaction = eachFeed.userReactonType {
@@ -80,13 +118,13 @@ extension EachFeedView {
                     .gesture(reactionGesture)
             }
             
-            if let count = eachFeed.reactionCount {
-                if count == 0 {
-                    Text("\(String(count))")
+            if let reactions = eachFeed.reactions {
+                if reactions.all.users.count == 0 {
+                    Text("\(String(reactions.all.users.count))")
                         .fontWeight(.semibold)
                 }
                 else{
-                    Text("\(String(count))M")
+                    Text("\(String(reactions.all.users.count))M")
                         .fontWeight(.semibold)
                 }
             }
@@ -145,8 +183,8 @@ extension EachFeedView {
     private var headerSection : some View {
         VStack(alignment: .leading){
             HStack{
-                if let name = eachFeed.authorName {
-                    Text(name)
+                if let author = eachFeed.author {
+                    Text(author.name)
                         .foregroundColor(.primary)
                         .font(.body)
                         .fontWeight(.semibold)
@@ -162,11 +200,9 @@ extension EachFeedView {
                     .frame(width: 15, height: 15)
                     .foregroundStyle(.orange)
                 Spacer()
-                if let dateInString = eachFeed.createdAt {
-                    if let date = convertDateString(dateInString){
-                        Text(date)
-                            .font(.caption)
-                            .fontWeight(.regular)
+                if let yourFeed = yourFeed {
+                    if yourFeed {
+                        menu
                     }
                 }
             }

@@ -1,8 +1,8 @@
 import Foundation
 
 final class LoginViewModel: ObservableObject {
-    @Published var loginEmail : String = "password@gmail.com"
-    @Published var loginPassword : String = "password"
+    @Published var loginEmail : String = "insta@gmail.com"
+    @Published var loginPassword : String = "insta"
     @Published var loading : Bool = false
     @Published var loginSuccess : Bool = false
     @Published var logInModel : LoginModel?

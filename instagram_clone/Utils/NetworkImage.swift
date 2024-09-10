@@ -22,8 +22,7 @@ struct NetworkImage: View {
                     .clipped()
             case .failure:
                 Image("noImage")
-                    .aspectRatio(contentMode: .fill)
-                    .frame(maxWidth: imageWidth , maxHeight: imageHeight )
+                    .frame(maxWidth: imageWidth , maxHeight: imageHeight)
                     .clipped()
             default:
                 Rectangle()

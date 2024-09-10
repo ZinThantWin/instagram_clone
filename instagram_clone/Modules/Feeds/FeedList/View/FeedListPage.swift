@@ -3,33 +3,26 @@ import SwiftUI
 struct FeedListPage: View {
     @EnvironmentObject var vm: FeedsViewModel
     @EnvironmentObject var loginViewModel: LoginViewModel
+    @EnvironmentObject var profileViewModel: ProfileViewModel
+    @EnvironmentObject var homeViewModel: HomeViewModel
     
     var body: some View {
         NavigationView {
-            NavigationStack{
+            NavigationStack {
                 ScrollView {
                     LazyVStack {
                         if let feeds = vm.allFeedList?.data {
                             ForEach(feeds, id: \.id) { feed in
-                                EachFeedView(eachFeed: feed, onTapComments: {
-                                    vm.onTapViewComments(feed)
-                                }, onTapProfile: {
-                                    Task {
-                                        await vm.getSelectedProfileDetail(id: String(feed.id))
-                                    }
-                                }, onTapReaction: {
-                                    Task {
-                                        await vm.giveReaction(reactionType: .love, postId: feed.id)
-                                    }
-                                }, onLongPressReaction: {
-                                    vm.showReactionRow = true
-                                }, onReactionSelected: {reaction in
-                                    superPrint(reaction)
-                                    Task {
-                                        await vm.giveReaction(reactionType: reaction, postId: feed.id)
-                                        vm.showReactionRow = false
-                                    }
-                                },showReactions: $vm.showReactionRow)
+                                EachFeedView(eachFeed: feed,
+                                             onTapComments: { onTapComments(feed) },
+                                             onTapProfile: { onTapProfile(feed) },
+                                             onTapReaction: { onTapReaction(feed) },
+                                             onLongPressReaction: { vm.showReactionRow = true },
+                                             onReactionSelected: { reaction in onReactionSelected(reaction, feed) },
+                                             onTapEditFeed: {
+                                    onEditFeed(feed) },
+                                             yourFeed: feed.author?.id == profileViewModel.userDetail?.id,
+                                             showReactions: $vm.showReactionRow)
                             }
                         } else {
                             Text("No feeds available.")
@@ -37,20 +30,12 @@ struct FeedListPage: View {
                         }
                     }
                 }
-                //                .navigationDestination(isPresented: $vm.showProfileFullScreenCover, destination: {
-                //                    if let selectedProfile = vm.selectedProfileDetail {
-                //                        ProfileDetailView(profile: Binding(get: {
-                //                            selectedProfile
-                //                        }, set: {
-                //                            vm .selectedProfileDetail = $0
-                //                        }), guestView: true)
-                //                    }
-                //
-                //                })
                 .sheet(isPresented: $vm.showCommentSheet, content: {
-                    CommentsSheet(comments: vm.selectedFeed!.comments,authorName: "Ko Zin",userName: "dummy User name",userImageUrl: "")
-                        .presentationDetents([.medium,.large])
-                        .presentationDragIndicator(.hidden)
+                    if let selectedFeed = vm.selectedFeed {
+                        CommentsSheet(comments: selectedFeed.comments, authorName: "Ko Zin", userName: "dummy User name", userImageUrl: "")
+                            .presentationDetents([.medium, .large])
+                            .presentationDragIndicator(.hidden)
+                    }
                 })
                 .refreshable {
                     Task {
@@ -66,5 +51,30 @@ struct FeedListPage: View {
             }
         }
     }
+    
+    private func onTapComments(_ feed: FeedModel) {
+        vm.onTapViewComments(feed)
+    }
+    
+    private func onTapProfile(_ feed: FeedModel) {
+        Task {
+            await vm.getSelectedProfileDetail(id: String(feed.id))
+        }
+    }
+    
+    private func onEditFeed(_ feed: FeedModel) {
+        homeViewModel.moveTo(destination: .add)
+    }
+    private func onTapReaction(_ feed: FeedModel) {
+        Task {
+            await vm.giveReaction(reactionType: .love, postId: feed.id)
+        }
+    }
+    
+    private func onReactionSelected(_ reaction: Reaction, _ feed: FeedModel) {
+        Task {
+            await vm.giveReaction(reactionType: reaction, postId: feed.id)
+            vm.showReactionRow = false
+        }
+    }
 }
-
