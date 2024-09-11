@@ -1,36 +1,126 @@
 import SwiftUI
 
 struct CommentsSheet : View {
-    @State var comments : [Comment]
+    @Binding var comments : [Comment]
     var authorName : String
     var userName : String
     var userImageUrl : String
+    var onTapCommentReaction : ((CommentSuggestedReaction) -> Void)?
+    var onAddComment : ((String) -> Void)?
+    @State var commentText : String = ""
+    let reactions: [CommentSuggestedReaction] = [
+        .like,
+        .love,
+        .tornado,
+        .rainbow,
+        .bolt,
+        .game,
+        .tennis,
+        .fire,
+        .cold
+    ]
     var body: some View {
         ZStack{
             bgColor
             VStack{
                 headingBar
-                if !comments.isEmpty {
-                    ScrollView{
-                        LazyVStack{
-                            ForEach(comments,id: \.id){comment in
-                                EachComment(comment: comment)
-                            }
+                CommentBodyView(comments: comments)
+                Spacer()
+                Divider()
+                    .foregroundColor(Color(uiColor: #colorLiteral(red: 0.5741485357, green: 0.5741624236, blue: 0.574154973, alpha: 1)))
+                ScrollView(.horizontal){
+                    LazyHStack{
+                        ForEach(reactions,id: \.id) { reaction in
+                            EachCommentReaction(onTapReaction: { reaction in
+                                onTapCommentReaction?(reaction)
+                            }, reaction: reaction )
+                            .padding(.all, 0)
                         }
-                    }
-                }else{
-                    VStack(alignment: .center){
-                        Spacer()
-                        Text("no comments found!")
-                        Spacer()
+                    }.frame(height: 60)
+                }
+                .scrollIndicators(.hidden)
+                commentBox
+                    .scrollIndicators(.hidden)
+            }
+        }
+    }
+}
+
+struct EachCommentReaction : View {
+    var onTapReaction : ((CommentSuggestedReaction) -> Void)?
+    var reaction : CommentSuggestedReaction
+    @State var isLarge : Bool = false
+    var body: some View {
+        Button{
+            onTapReaction?(reaction)
+        }label: {
+            Image(systemName: reaction.name())
+                .resizable()
+                .scaledToFit()
+                .frame(width: 30, height: 30)
+                .scaleEffect(isLarge ?  1 : Double.random(in: 0.9...1.1))
+                .foregroundColor(Color(uiColor: reaction.color()))
+                .padding()
+        }.onAppear{
+            withAnimation(Animation.bouncy().repeatForever(autoreverses: true)) {
+                    isLarge.toggle()
+                }
+        }
+    }
+}
+
+struct CommentBodyView : View {
+    @State var comments : [Comment]
+    var body: some View {
+        if !comments.isEmpty {
+            ScrollView{
+                LazyVStack{
+                    ForEach(comments,id: \.id){comment in
+                        EachComment(comment: comment)
                     }
                 }
+            }
+        }else{
+            VStack(alignment: .center){
+                Spacer()
+                Text("No comments yet")
+                    .font(.title)
+                    .fontWeight(.semibold)
+                Text("Start the conversation.")
+                    .font(.subheadline)
+                    .fontWeight(.regular)
+                Spacer()
             }
         }
     }
 }
 
 extension CommentsSheet {
+    
+    private var commentBox : some View{
+        HStack{
+            NetworkImageProfile(imageUrlInString: AppConstants.dummyModelProfile, imageHeight: 40, imageWidth: 40)
+            TextField("Add a comment...", text: $commentText)
+                .overlay {
+                    if !commentText.isEmpty {
+                        HStack(){
+                            Spacer()
+                            Button{
+                                onAddComment?(commentText)
+                                commentText = ""
+                            }label: {
+                                Image(systemName: "arrow.up.circle.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 30, height: 30)
+                                    .foregroundColor(.blue)
+                            }
+                        }
+                    }
+                }
+        }.padding(.horizontal,15)
+    }
+    
     private var bgColor : some View{
         Rectangle()
             .fill(Color.black)
@@ -40,7 +130,7 @@ extension CommentsSheet {
     private var headingBar : some View {
         VStack{
             Rectangle()
-                .frame(width: 50, height: 6)
+                .frame(width: 50, height: 5)
                 .clipShape(.capsule)
                 .foregroundColor(.secondary)
                 .padding(.top,10)
@@ -57,20 +147,28 @@ struct EachComment : View {
     @State var comment : Comment
     var body: some View {
         HStack{
-            DummyProfile(size: 25,color: .primary)
+            NetworkImageProfile(imageUrlInString: AppConstants.dummyModelProfile, imageHeight: 45, imageWidth: 45)
             VStack(alignment: .leading,spacing: 0){
                 HStack{
                     Text(comment.author.name)
-                        .font(.system(size: 14,weight: .semibold))
+                        .font(.system(size: 14,weight: .thin))
                     if let dateInString = comment.updatedAt {
                         if let timeStamp = convertDateString(dateInString){
                             Text(timeStamp)
-                                .font(.system(size: 13,weight: .regular))
+                                .font(.system(size: 14,weight: .medium))
                         }
                     }
                 }
-                Text(comment.content)
-                    .font(.system(size: 16,weight: .semibold))
+                if comment.content.hasSuffix(".emoji"){
+                    let emote = comment.content.replacingOccurrences(of: ".emoji", with: "")
+                    let reaction = CommentSuggestedReaction(from: emote)
+                    Image(systemName: reaction!.name())
+                        .symbolEffect(.pulse)
+                        .foregroundColor(Color(uiColor: reaction!.color()))
+                }else{
+                    Text(comment.content)
+                        .font(.system(size: 16,weight: .medium))
+                }
             }
             Spacer()
             VStack{
@@ -89,9 +187,4 @@ struct EachComment : View {
         .padding(.bottom, 10)
         .padding(.horizontal, 10)
     }
-}
-
-#Preview {
-    CommentsSheet(comments: sampleFeedModel.sampleFeedModel.comments,authorName: "Kin Zo", userName: "dummy User",userImageUrl: "")
-        .preferredColorScheme(.dark)
 }

@@ -9,13 +9,26 @@ final class FeedsViewModel : ObservableObject{
     @Published var selectedProfileDetail : ProfileModel?
     private var profileVM: ProfileViewModel
     @Published var searchFeeds : String = ""
+    @Published var commentToAdd : String = ""
     
     init(profileVM: ProfileViewModel) {
         self.profileVM = profileVM
     }
     
+    func createNewComment(for postId : Int,comment : String )async{
+        let body = ["postId" : postId,
+                    "content" : comment] as [String : Any]
+        do{
+            let _ : Any  = try await ApiService.shared.apiPostCallAny(to: ApiEndPoints.comment, body: body, as: commentResponseModel.self, xNeedToken: true)
+        }
+        catch{
+            superPrint(error)
+        }
+    }
+    
     func getSelectedProfileDetail(id : String)async {
         let response : ProfileModel?  = await profileVM.getUserProfile(id: id)
+        superPrint(response)
         await MainActor.run {
             selectedProfileDetail = response
             if selectedProfileDetail != nil {
@@ -67,4 +80,8 @@ final class FeedsViewModel : ObservableObject{
             }
         }
     }
+}
+
+struct commentResponseModel : Codable {
+    let id : Int
 }

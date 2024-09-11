@@ -21,6 +21,113 @@ enum EditDetailEnum {
     case email
     case bio
 }
+
+enum CommentSuggestedReaction {
+    case like
+    case love
+    case tornado
+    case rainbow
+    case bolt
+    case game
+    case tennis
+    case fire
+    case cold
+    
+    var id: String {
+            switch self {
+            case .like:
+                return "like"
+            case .love:
+                return "love"
+            case .tornado:
+                return "tornado"
+            case .rainbow:
+                return "rainbow"
+            case .bolt:
+                return "bolt"
+            case .game:
+                return "game"
+            case .tennis:
+                return "tennis"
+            case .fire:
+                return "fire"
+            case .cold:
+                return "cold"
+            }
+        }
+    
+    init?(from string: String) {
+            switch string.lowercased() {
+            case "like", "hand.thumbsup.fill":
+                self = .like
+            case "love", "heart.fill":
+                self = .love
+            case "tornado", "tornado.circle.fill":
+                self = .tornado
+            case "rainbow":
+                self = .rainbow
+            case "bolt", "bolt.fill":
+                self = .bolt
+            case "game", "gamecontroller.fill":
+                self = .game
+            case "tennis", "tennisball.fill":
+                self = .tennis
+            case "fire", "flame.fill":
+                self = .fire
+            case "cold", "wind":
+                self = .cold
+            default:
+                self = .love
+            }
+        }
+    
+    func name() -> String {
+        switch self {
+        case .like:
+            return "hand.thumbsup.fill"
+        case .love:
+            return "heart.fill"
+        case .tornado:
+            return "tornado"
+        case .rainbow:
+            return "rainbow"
+        case .bolt:
+            return "bolt.fill"
+        case .game:
+            return "gamecontroller.fill"
+        case .tennis:
+            return "tennisball.fill"
+        case .fire:
+            return "flame.fill"
+        case .cold:
+            return "wind"
+        }
+    }
+    
+    func color() -> UIColor  {
+        switch self {
+        case .like:
+            return #colorLiteral(red: 0, green: 0.5898008943, blue: 1, alpha: 1)
+        case .love:
+            return #colorLiteral(red: 1, green: 0.1857388616, blue: 0.5733950138, alpha: 1)
+        case .tornado:
+            return #colorLiteral(red: 0.9999960065, green: 1, blue: 1, alpha: 1)
+        case .rainbow:
+            return #colorLiteral(red: 1, green: 0.2527923882, blue: 1, alpha: 1)
+        case .bolt:
+            return #colorLiteral(red: 0.8985771537, green: 0.9752448201, blue: 0, alpha: 1)
+        case .game:
+            return #colorLiteral(red: 0.9961428046, green: 0.2062371075, blue: 0.004998840857, alpha: 1)
+        case .tennis:
+            return #colorLiteral(red: 0, green: 0.9768045545, blue: 0, alpha: 1)
+        case .fire:
+            return #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1)
+        case .cold:
+            return #colorLiteral(red: 0, green: 0.9914394021, blue: 1, alpha: 1)
+        }
+    }
+}
+
 enum Reaction: String, CaseIterable {
     case like
     case love

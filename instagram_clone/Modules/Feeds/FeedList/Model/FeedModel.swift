@@ -36,7 +36,7 @@ struct FeedModel: Codable {
     let image: String?
     let createdAt: String?
     let reactionCount: Int?
-    let comments : [Comment]
+    var comments : [Comment]
     var ranking : Int? = Int.random(in: 1...3)
     let reactions : ReactionModel?
     var userReactonType : String?

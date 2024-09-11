@@ -124,7 +124,7 @@ extension EachFeedView {
                         .fontWeight(.semibold)
                 }
                 else{
-                    Text("\(String(reactions.all.users.count))M")
+                    Text("\(String(reactions.all.users.count))")
                         .fontWeight(.semibold)
                 }
             }

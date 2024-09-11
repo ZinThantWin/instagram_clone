@@ -5,6 +5,8 @@ struct FeedListPage: View {
     @EnvironmentObject var loginViewModel: LoginViewModel
     @EnvironmentObject var profileViewModel: ProfileViewModel
     @EnvironmentObject var homeViewModel: HomeViewModel
+    @EnvironmentObject var addFeedVm: AddFeedsViewModel
+    @State private var postDeleteSuccess : Bool = false
     
     var body: some View {
         NavigationView {
@@ -21,6 +23,8 @@ struct FeedListPage: View {
                                              onReactionSelected: { reaction in onReactionSelected(reaction, feed) },
                                              onTapEditFeed: {
                                     onEditFeed(feed) },
+                                             onTapDeleteFeed: {
+                                    onDeleteFeed(feed) },
                                              yourFeed: feed.author?.id == profileViewModel.userDetail?.id,
                                              showReactions: $vm.showReactionRow)
                             }
@@ -30,11 +34,21 @@ struct FeedListPage: View {
                         }
                     }
                 }
+                .alert(isPresented: $postDeleteSuccess, content: {
+                    Alert(title: Text("selected feed deleted successfully!"))
+                })
                 .sheet(isPresented: $vm.showCommentSheet, content: {
-                    if let selectedFeed = vm.selectedFeed {
-                        CommentsSheet(comments: selectedFeed.comments, authorName: "Ko Zin", userName: "dummy User name", userImageUrl: "")
-                            .presentationDetents([.medium, .large])
-                            .presentationDragIndicator(.hidden)
+                    if let feed = vm.selectedFeed {
+                        CommentsSheet(comments: Binding(
+                            get: { vm.selectedFeed?.comments ?? [] },
+                            set: { vm.selectedFeed?.comments = $0 }
+                        ), authorName: "Ko Zin", userName: "dummy User name", userImageUrl: "", onTapCommentReaction: { reaction in
+                            onAddComments(for: feed, comment: "\(reaction.name()).emoji")
+                        }, onAddComment: {addedComment in
+                            onAddComments(for: feed, comment: addedComment)
+                        })
+                        .presentationDetents([.medium, .large])
+                        .presentationDragIndicator(.hidden)
                     }
                 })
                 .refreshable {
@@ -52,6 +66,18 @@ struct FeedListPage: View {
         }
     }
     
+    private func onAddComments(for feed : FeedModel,comment : String){
+        Task{
+            await vm.createNewComment(for: feed.id,comment: comment)
+            await vm.getAllFeedList()
+            await MainActor.run {
+                if let feedList = vm.allFeedList {
+                    vm.selectedFeed = feedList.data.first(where: {$0.id == vm.selectedFeed?.id})
+                }
+            }
+        }
+    }
+    
     private func onTapComments(_ feed: FeedModel) {
         vm.onTapViewComments(feed)
     }
@@ -63,8 +89,23 @@ struct FeedListPage: View {
     }
     
     private func onEditFeed(_ feed: FeedModel) {
-        homeViewModel.moveTo(destination: .add)
+        addFeedVm.selectedImageInUrl = feed.image
+        addFeedVm.title = feed.title
+        addFeedVm.content = feed.content ?? ""
+        addFeedVm.feedIdToEdit = feed.id
+        homeViewModel.editFeed(destination: .add,viewModel: addFeedVm)
     }
+    
+    private func onDeleteFeed(_ feed: FeedModel) {
+        Task {
+            await addFeedVm.deleteSelectedFeed(for: feed.id)
+            await vm.getAllFeedList()
+            await MainActor.run {
+                postDeleteSuccess = true
+            }
+        }
+    }
+    
     private func onTapReaction(_ feed: FeedModel) {
         Task {
             await vm.giveReaction(reactionType: .love, postId: feed.id)

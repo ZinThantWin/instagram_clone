@@ -6,6 +6,7 @@ struct instagram_cloneApp: App {
     @StateObject private var profileVM = ProfileViewModel.shared
     @StateObject private var registerViewModel = RegisterViewModel()
     @StateObject private var homeVM = HomeViewModel()
+    @StateObject private var addFeedVM = AddFeedsViewModel()
     @StateObject private var feedsVm : FeedsViewModel = FeedsViewModel(profileVM: ProfileViewModel.shared)
     @StateObject private var loginVm = LoginViewModel(profileVM: ProfileViewModel.shared)
     @StateObject private var splashVm = SplashScreenViewModel(loginViewModel: LoginViewModel(profileVM: ProfileViewModel.shared))
@@ -18,6 +19,7 @@ struct instagram_cloneApp: App {
                 .environmentObject(profileVM )
                 .environmentObject(splashVm )
                 .environmentObject(homeVM )
+                .environmentObject(addFeedVM )
         }
     }
 }

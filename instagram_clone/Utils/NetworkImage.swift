@@ -32,3 +32,31 @@ struct NetworkImage: View {
             }}
     }
 }
+
+struct NetworkImageProfile: View {
+    var imageUrlInString : String
+    var imageHeight : Double
+    var imageWidth : Double
+    var body: some View {
+        AsyncImage(url: URL(string: (imageUrlInString))){phase in
+            switch phase {
+            case .empty:
+                ProgressView()
+                    .foregroundColor(.primary)
+            case .success(let image):
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(maxWidth: imageWidth , maxHeight: imageHeight )
+                    .clipShape(.circle)
+            case .failure:
+                Image(systemName: "person.circle")
+                    .frame(maxWidth: imageWidth , maxHeight: imageHeight)
+                    .clipShape(.circle)
+            default:
+                Image(systemName: "person.circle")
+                    .frame(maxWidth: imageWidth , maxHeight: imageHeight)
+                    .clipShape(.circle)
+            }}
+    }
+}

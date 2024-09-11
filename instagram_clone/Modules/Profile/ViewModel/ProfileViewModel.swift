@@ -5,7 +5,6 @@ import PhotosUI
 final class ProfileViewModel: ObservableObject {
     // Shared singleton instance
     static let shared = ProfileViewModel()
-    
     @Published var userDetail: ProfileModel?
     @Published var navigateToProfileEdit: Bool = false
     @Published var navigateToDetailEdit: Bool = false

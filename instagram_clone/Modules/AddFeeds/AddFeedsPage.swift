@@ -9,15 +9,31 @@ import SwiftUI
 import PhotosUI
 
 struct AddFeedsPage: View {
-    @StateObject private var vm : AddFeedsViewModel  = AddFeedsViewModel()
+    @EnvironmentObject private var vm : AddFeedsViewModel
+    @EnvironmentObject private var homeVM : HomeViewModel
     @State private var photosPickerItem : PhotosPickerItem?
     var body: some View {
         VStack{
             HStack{
                 Spacer()
-                Text("New post")
-                    .fontWeight(.bold)
+                if vm.editingAddedFeed {
+                    Text("Edit post")
+                        .fontWeight(.bold)
+                } else {
+                    Text("New post")
+                        .fontWeight(.bold)
+                }
                 Spacer()
+                if vm.editingAddedFeed {
+                    Button {
+                        vm.editingAddedFeed = false
+                        homeVM.selectedTab = .home
+                    } label: {
+                        Image(systemName: "xmark")
+                            .foregroundColor(.white)
+                            .padding()
+                    }
+                }
             }
             TextField("title", text: $vm.title, prompt: Text("Write a title..."))
                 .autocorrectionDisabled()
@@ -31,7 +47,11 @@ struct AddFeedsPage: View {
             }
             
             HStack{
-                if let selectedImage = vm.selectedImage {
+                Spacer()
+                if let imageUrl = vm.selectedImageInUrl {
+                    NetworkImage(imageUrlInString: "https://social.petsentry.info\(imageUrl)", imageHeight: UIScreen.main.bounds.height * 0.4, imageWidth: .infinity)
+                }
+                else if let selectedImage = vm.selectedImageInFile {
                     Image(uiImage: selectedImage)
                         .resizable()
                         .scaledToFit()
@@ -52,10 +72,16 @@ struct AddFeedsPage: View {
                 Spacer()
             }
             
-            if let _ = vm.selectedImageInData {
+            if !vm.title.isEmpty {
                 Button{
-                    Task{
-                        await vm.uploadImage()
+                    if vm.editingAddedFeed {
+                        Task{
+                            await vm.updateNewFeed(for: vm.feedIdToEdit!)
+                        }
+                    } else{
+                        Task{
+                            await vm.uploadNewFeed()
+                        }
                     }
                 }label: {
                     Text("Share moment")
@@ -79,7 +105,7 @@ struct AddFeedsPage: View {
                    let data = try? await photosPickerItem.loadTransferable(type: Data.self) {
                     vm.selectedImageInData = data
                     if let image = UIImage(data: data){
-                        vm.selectedImage = image
+                        vm.selectedImageInFile = image
                     }
                 }
             }

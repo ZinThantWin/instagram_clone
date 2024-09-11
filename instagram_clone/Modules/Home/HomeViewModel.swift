@@ -11,7 +11,8 @@ import SwiftUI
 final class HomeViewModel : ObservableObject {
     @Published var selectedTab : Tab = .home
     
-    func moveTo(destination : Tab ){
+    func editFeed(destination : Tab,viewModel : AddFeedsViewModel){
+        viewModel.editingAddedFeed = true
         selectedTab = destination
     }
 }

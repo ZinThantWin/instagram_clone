@@ -23,4 +23,7 @@ class ApiEndPoints {
     
     // Reactions
     static let reaction : String = "likes/reactions"
+    
+    // Comments
+    static let comment : String = "comments"
 }
