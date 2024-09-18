@@ -13,6 +13,7 @@ struct FeedListPage: View {
             NavigationStack {
                 ScrollView {
                     LazyVStack {
+                        SuggestFriendListView()
                         if let feeds = vm.allFeedList?.data {
                             ForEach(feeds, id: \.id) { feed in
                                 EachFeedView(eachFeed: feed,
@@ -25,6 +26,9 @@ struct FeedListPage: View {
                                     onEditFeed(feed) },
                                              onTapDeleteFeed: {
                                     onDeleteFeed(feed) },
+                                             onTapReactionCount: {
+                                    onTapReactionCount(reactionModel: feed.reactions)
+                                },
                                              yourFeed: feed.author?.id == profileViewModel.userDetail?.id,
                                              showReactions: $vm.showReactionRow)
                             }
@@ -34,18 +38,30 @@ struct FeedListPage: View {
                         }
                     }
                 }
+                .scrollIndicators(.hidden)
                 .alert(isPresented: $postDeleteSuccess, content: {
                     Alert(title: Text("selected feed deleted successfully!"))
                 })
+                .sheet(item: $vm.selectedProfileDetail, content: { profile in
+                    ProfileDetailView(guestView: true)
+                })
+                .sheet(item: $vm.selectedReaction, content: { selectedReaction in
+                    AllReactionSheet(reactionModel: selectedReaction,onTap: { id in
+                        onTap(id)
+                    })
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.hidden)
+                })
                 .sheet(isPresented: $vm.showCommentSheet, content: {
                     if let feed = vm.selectedFeed {
-                        CommentsSheet(comments: Binding(
-                            get: { vm.selectedFeed?.comments ?? [] },
-                            set: { vm.selectedFeed?.comments = $0 }
-                        ), authorName: "Ko Zin", userName: "dummy User name", userImageUrl: "", onTapCommentReaction: { reaction in
+                        CommentsSheet(onTapCommentReaction: { reaction in
                             onAddComments(for: feed, comment: "\(reaction.name()).emoji")
                         }, onAddComment: {addedComment in
                             onAddComments(for: feed, comment: addedComment)
+                        }, onUpdateComment : {updatedComment,commentId in
+                            onUpdateComments(for: feed , comment: updatedComment, commentId: 1)
+                        }, onDeleteComment: { commentId  in
+                            onDeleteComment(commentId)
                         })
                         .presentationDetents([.medium, .large])
                         .presentationDragIndicator(.hidden)
@@ -53,13 +69,13 @@ struct FeedListPage: View {
                 })
                 .refreshable {
                     Task {
-                        await vm.getAllFeedList()
+                        await vm.getFollowedFeedList()
                     }
                 }
                 .navigationTitle("Instagram")
                 .onAppear {
                     Task {
-                        await vm.getAllFeedList()
+                        await vm.getFollowedFeedList()
                     }
                 }
             }
@@ -69,7 +85,19 @@ struct FeedListPage: View {
     private func onAddComments(for feed : FeedModel,comment : String){
         Task{
             await vm.createNewComment(for: feed.id,comment: comment)
-            await vm.getAllFeedList()
+            await vm.getFollowedFeedList()
+            await MainActor.run {
+                if let feedList = vm.allFeedList {
+                    vm.selectedFeed = feedList.data.first(where: {$0.id == vm.selectedFeed?.id})
+                }
+            }
+        }
+    }
+    
+    private func onUpdateComments(for feed : FeedModel,comment : String,commentId : Int){
+        Task{
+            await vm.updateComment(postId: feed.id, commentId: commentId, comment: comment )
+            await vm.getFollowedFeedList()
             await MainActor.run {
                 if let feedList = vm.allFeedList {
                     vm.selectedFeed = feedList.data.first(where: {$0.id == vm.selectedFeed?.id})
@@ -82,14 +110,26 @@ struct FeedListPage: View {
         vm.onTapViewComments(feed)
     }
     
+    private func onTapReactionCount(reactionModel : ReactionModel?) {
+        vm.selectedReaction = reactionModel
+    }
+    
     private func onTapProfile(_ feed: FeedModel) {
         Task {
-            await vm.getSelectedProfileDetail(id: String(feed.id))
+            await vm.getSelectedProfileDetail(id: String(feed.author?.id ?? 1))
+            profileViewModel.userDetail = vm.selectedProfileDetail
+        }
+    }
+    
+    private func onTap(_ id: Int) {
+        Task {
+            await vm.getSelectedProfileDetail(id: String(id))
+            profileViewModel.userDetail = vm.selectedProfileDetail
         }
     }
     
     private func onEditFeed(_ feed: FeedModel) {
-        addFeedVm.selectedImageInUrl = feed.image
+        addFeedVm.selectedImageInUrl = feed.images.first
         addFeedVm.title = feed.title
         addFeedVm.content = feed.content ?? ""
         addFeedVm.feedIdToEdit = feed.id
@@ -99,9 +139,21 @@ struct FeedListPage: View {
     private func onDeleteFeed(_ feed: FeedModel) {
         Task {
             await addFeedVm.deleteSelectedFeed(for: feed.id)
-            await vm.getAllFeedList()
+            await vm.getFollowedFeedList()
             await MainActor.run {
                 postDeleteSuccess = true
+            }
+        }
+    }
+    
+    private func onDeleteComment(_ id: Int) {
+        Task {
+            await vm.deleteComment(for: id)
+            await vm.getFollowedFeedList()
+            await MainActor.run {
+                if let feedList = vm.allFeedList {
+                    vm.selectedFeed = feedList.data.first(where: {$0.id == vm.selectedFeed?.id})
+                }
             }
         }
     }

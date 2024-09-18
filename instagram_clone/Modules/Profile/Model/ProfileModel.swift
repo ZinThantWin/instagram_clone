@@ -1,6 +1,6 @@
 import Foundation
 
-struct ProfileModel : Codable {
+struct ProfileModel : Codable, Identifiable {
     let id : Int
     var name,email : String
     var image,bio : String?

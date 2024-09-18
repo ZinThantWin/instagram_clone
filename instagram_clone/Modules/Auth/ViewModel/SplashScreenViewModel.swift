@@ -2,6 +2,7 @@ import Foundation
 
 final class SplashScreenViewModel : ObservableObject {
     @Published var isLoggedIn = false
+    @Published var navigateNow = false 
     private var loginViewModel : LoginViewModel
     
     init(loginViewModel: LoginViewModel) {
@@ -16,10 +17,12 @@ final class SplashScreenViewModel : ObservableObject {
             await loginViewModel.updateMe()
             await MainActor.run {
                 isLoggedIn = true
+                navigateNow = true 
             }
         } else {
             await MainActor.run {
                 isLoggedIn = false
+                navigateNow = true 
             }
         }
     }

@@ -17,11 +17,6 @@ struct SplashScreen: View {
             }else{
                 LoginPage()
             }
-        }.onAppear{
-//            TokenManager.shared.deleteToken()
-            Task{
-                await splashViewModel.checkToken()
-            }
         }
     }
 }

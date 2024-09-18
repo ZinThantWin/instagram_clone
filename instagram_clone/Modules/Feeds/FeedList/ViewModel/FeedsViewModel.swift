@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 final class FeedsViewModel : ObservableObject{
     @Published var allFeedList : FeedListModel?
@@ -10,9 +11,59 @@ final class FeedsViewModel : ObservableObject{
     private var profileVM: ProfileViewModel
     @Published var searchFeeds : String = ""
     @Published var commentToAdd : String = ""
+    @Published var selectedReaction : ReactionModel?
     
     init(profileVM: ProfileViewModel) {
         self.profileVM = profileVM
+    }
+    
+    func getAllFeedList () async {
+        do{
+            let tempList : FeedListModel? = try await ApiService.shared.apiGetCall(from: ApiEndPoints.posts, as: FeedListModel.self,xNeedToken: true)
+            assignRandomRanking(to: tempList)
+            await MainActor.run {[weak self] in
+                withAnimation {
+                    self?.allFeedList = tempList
+                }
+            }
+        }catch{
+            superPrint("all posts failed \(error)")
+        }
+    }
+    
+    
+    
+    func getFollowedFeedList () async {
+        do{
+            let tempList : FeedListModel? = try await ApiService.shared.apiGetCall(from: ApiEndPoints.followedPosts, as: FeedListModel.self,xNeedToken: true)
+            assignRandomRanking(to: tempList)
+            await MainActor.run {[weak self] in
+                withAnimation {
+                    if tempList != nil {
+                        if tempList!.data.isEmpty {
+                            Task{
+                                await self?.getAllFeedList()
+                            }
+                        }
+                    }
+                    self?.allFeedList = tempList
+                }
+            }
+        }catch{
+            superPrint("all posts failed \(error)")
+        }
+    }
+    
+    func deleteComment(for commentId : Int)async{
+        superPrint("\(ApiEndPoints.comment)/\(commentId)")
+        superPrint(ApiService.shared.apiToken)
+        do {
+            let response  : Any = try await ApiService.shared.apiDeleteCall(from: "\(ApiEndPoints.comment)/\(commentId)", as: commentDeleteResponseModel.self, xNeedToken: true)
+            superPrint(response)
+        }
+        catch{
+            superPrint(error )
+        }
     }
     
     func createNewComment(for postId : Int,comment : String )async{
@@ -26,26 +77,24 @@ final class FeedsViewModel : ObservableObject{
         }
     }
     
+    func updateComment(postId : Int,commentId : Int,comment : String)async{
+        let body = ["postId" : postId,
+                    "content" : comment] as [String : Any]
+        do{
+            let _ : Any  = try await ApiService.shared.apiPostCallAny(to: "\(ApiEndPoints.comment)/\(commentId)", body: body, as: commentResponseModel.self, xNeedToken: true)
+        }
+        catch{
+            superPrint(error)
+        }
+    }
+    
     func getSelectedProfileDetail(id : String)async {
         let response : ProfileModel?  = await profileVM.getUserProfile(id: id)
-        superPrint(response)
         await MainActor.run {
             selectedProfileDetail = response
             if selectedProfileDetail != nil {
                 showProfileFullScreenCover = true
             }
-        }
-    }
-    
-    func getAllFeedList () async {
-        do{
-            let tempList : FeedListModel? = try await ApiService.shared.apiGetCall(from: ApiEndPoints.posts, as: FeedListModel.self,xNeedToken: true )
-            assignRandomRanking(to: tempList)
-            await MainActor.run {[weak self] in
-                self?.allFeedList = tempList
-            }
-        }catch{
-            superPrint("all posts failed \(error)")
         }
     }
     
@@ -63,7 +112,7 @@ final class FeedsViewModel : ObservableObject{
         let requestBody = ["postId": postId, "reactionType": reactionType.name(for: .reacted)] as [String : Any]
         do {
             let _: ReactionResponseModel = try await ApiService.shared.apiPostCallAny(to: ApiEndPoints.reaction, body: requestBody, as: ReactionResponseModel.self, xNeedToken: true)
-            await getAllFeedList()
+            await getFollowedFeedList()
         } catch {
             superPrint(error)
         }
@@ -84,4 +133,7 @@ final class FeedsViewModel : ObservableObject{
 
 struct commentResponseModel : Codable {
     let id : Int
+}
+struct commentDeleteResponseModel : Codable {
+    let message : String? 
 }

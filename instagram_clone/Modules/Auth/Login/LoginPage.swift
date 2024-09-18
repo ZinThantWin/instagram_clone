@@ -28,6 +28,7 @@ struct LoginPage: View {
             }.navigationDestination(isPresented: $loginViewModel.loginSuccess) {
                 HomePage()
             }
+            .navigationBarBackButtonHidden(true)
         }
         
     }

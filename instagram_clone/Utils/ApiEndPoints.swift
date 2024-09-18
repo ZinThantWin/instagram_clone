@@ -9,6 +9,8 @@ import Foundation
 
 
 class ApiEndPoints {
+    // Image
+    static let imageBaseUrl : String = "https://social.petsentry.info"
     
     // Auth
     static let registerUser : String = "auth/register"
@@ -17,6 +19,7 @@ class ApiEndPoints {
     
     // Feed
     static let posts : String = "posts"
+    static let followedPosts : String = "posts/followers"
     
     // Users
     static let users : String = "users"
@@ -26,4 +29,11 @@ class ApiEndPoints {
     
     // Comments
     static let comment : String = "comments"
+    
+    // Suggested Friend
+    static let suggestedFriend : String = "users/suggested"
+    
+    // Follow
+    static let follow : String = "follows/follow"
+    static let unfollow : String = "follows/unfollow"
 }

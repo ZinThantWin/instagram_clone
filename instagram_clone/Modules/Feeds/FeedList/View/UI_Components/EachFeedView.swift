@@ -9,6 +9,7 @@ struct EachFeedView : View {
     var onReactionSelected: ((Reaction) -> Void)?
     var onTapEditFeed : (() -> Void)?
     var onTapDeleteFeed : (() -> Void)?
+    var onTapReactionCount : (() -> Void)?
     @State var yourFeed : Bool?
     @State private var scale: CGFloat = 1.0
     @Binding var showReactions: Bool
@@ -29,7 +30,12 @@ struct EachFeedView : View {
                     Button {
                         onTapProfile()
                     } label: {
-                        DummyProfile(size: 50)
+                        if let profileImage = eachFeed.author?.image {
+                            CachedAsyncImage(url: URL(string: "https://social.petsentry.info\(profileImage)")!, width: 50, height: 50, isCircle: true)
+                        } else {
+                            DummyProfile(size: 50)
+                        }
+                        
                     }
                     
                     headerSection
@@ -37,9 +43,9 @@ struct EachFeedView : View {
                 .padding(.horizontal, pagePadding)
                 .padding(.bottom, pagePadding)
                 
-                if let url = eachFeed.image{
+                if let url = eachFeed.images.first{
                     if !url.isEmpty {
-                        NetworkImage(imageUrlInString: "https://social.petsentry.info\(url)", imageHeight: UIScreen.main.bounds.height * 0.4, imageWidth: UIScreen.main.bounds.width)
+                        CachedAsyncImage(url: URL(string: "https://social.petsentry.info\(url)")!, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.4, isCircle: false)
                     }
                 }
                 
@@ -119,15 +125,15 @@ extension EachFeedView {
             }
             
             if let reactions = eachFeed.reactions {
-                if reactions.all.users.count == 0 {
+                Button{
+                    onTapReactionCount?()
+                }label: {
                     Text("\(String(reactions.all.users.count))")
+                    .contentTransition(.numericText(countsDown: true))
                         .fontWeight(.semibold)
+                        .foregroundColor(.white)
                 }
-                else{
-                    Text("\(String(reactions.all.users.count))")
-                        .fontWeight(.semibold)
-                }
-            }
+            } 
             
             EachFeedIcon(icon: "bubble.right",iconColor: .white, action: {
                 onTapComments()
@@ -147,7 +153,7 @@ extension EachFeedView {
         .overlay {
             if showReactions {
                 HStack{
-                    ForEach(Reaction.allCases,id : \.self) {reaction in
+                    ForEach(Reaction.allCases.dropLast(), id : \.self) {reaction in
                         Button{
                             onReactionSelected?(reaction)
                         }label: {
@@ -206,9 +212,16 @@ extension EachFeedView {
                     }
                 }
             }
-            Text("suggested for you")
-                .foregroundColor(.primary)
-                .font(.caption)
+            if let edited = eachFeed.isEdited {
+                Text(edited ? "Edited" : "suggested for you")
+                    .foregroundColor(.primary)
+                    .font(.caption)
+            } else {
+                Text("suggested for you")
+                    .foregroundColor(.primary)
+                    .font(.caption)
+            }
+            
         }
     }
     
@@ -256,6 +269,7 @@ extension EachFeedView {
             .frame(width: 25, height: 25)
             .foregroundColor(color)
             .padding(.trailing, 5)
+            .transition(.symbolEffect(.automatic).combined(with: .blurReplace(.downUp)))
     }
     
     private var reactionGesture: some Gesture {

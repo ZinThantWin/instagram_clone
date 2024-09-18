@@ -237,14 +237,18 @@ class ApiService {
             }
         }
         
-        // Append image data if it's not nil
         if let imageData = imageData {
+            // Ensure the filename has an extension, e.g., .jpeg (adjust according to your image format)
+            let fileExtension = "jpeg" // or "png", depending on your image type
+            let fullFileName = imageName.contains(".") ? imageName : "\(imageName).\(fileExtension)"
+            
             body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"\(imageName)\"; filename=\"\(imageName)\"\r\n".data(using: .utf8)!)
-            body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!) // Adjust based on image type if necessary
+            body.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(fullFileName)\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: image/\(fileExtension)\r\n\r\n".data(using: .utf8)!)
             body.append(imageData)
             body.append("\r\n".data(using: .utf8)!)
         }
+
         
         // Closing boundary
         body.append("--\(boundary)--\r\n".data(using: .utf8)!)
@@ -275,25 +279,28 @@ class ApiService {
     
     func uploadNewFeed<T: Decodable>(
         to endpoint: String,
-        imageData: Data?,
+        imageData: [Data],  // Now an array of Data
         imageName: String,
         title: String,
         content: String,
         as type: T.Type,
         xNeedToken: Bool = true
     ) async throws -> T {
+        // Validate URL
         guard let url = URL(string: "\(baseUrl)\(endpoint)") else {
             throw ApiError.invalidURL
         }
         
+        // Create a POST request
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.timeoutInterval = 30.0
         
-        // Boundary string
+        // Boundary string for multipart data
         let boundary = "Boundary-\(UUID().uuidString)"
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         
+        // Add authorization header if needed
         if xNeedToken {
             request.setValue("Bearer \(apiToken)", forHTTPHeaderField: "Authorization")
         }
@@ -311,20 +318,25 @@ class ApiService {
         body.append("Content-Disposition: form-data; name=\"content\"\r\n\r\n".data(using: .utf8)!)
         body.append("\(content)\r\n".data(using: .utf8)!)
         
-        // Append image data only if it's not nil
-        if let imageData = imageData {
+        // Append multiple images using image array
+        superPrint(imageData.count)
+        for (index, data) in imageData.enumerated() {
+            let fileExtension = "jpeg" // or "png", depending on your image type
+            let fullFileName = imageName.contains(".") ? imageName : "\(imageName)_\(index).\(fileExtension)"
+            
             body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"\(imageName)\"; filename=\"\(imageName)\"\r\n".data(using: .utf8)!)
-            body.append("Content-Type: image/png\r\n\r\n".data(using: .utf8)!)
-            body.append(imageData)
+            body.append("Content-Disposition: form-data; name=\"images\"; filename=\"\(fullFileName)\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: image/\(fileExtension)\r\n\r\n".data(using: .utf8)!)
+            body.append(data)
             body.append("\r\n".data(using: .utf8)!)
         }
         
-        // Closing boundary
+        // Close the boundary
         body.append("--\(boundary)--\r\n".data(using: .utf8)!)
         
         request.httpBody = body
         
+        // Execute the request
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             
@@ -336,14 +348,9 @@ class ApiService {
             superPrint("Response Body: \(String(data: data, encoding: .utf8) ?? "No response body")")
             
             if (200...299).contains(httpResponse.statusCode) {
-                do {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    return try decoder.decode(T.self, from: data)
-                } catch {
-                    superPrint("Decoding error: \(error)")
-                    throw ApiError.invalidData
-                }
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                return try decoder.decode(T.self, from: data)
             } else if httpResponse.statusCode == 401 {
                 superPrint("Token expired, handling expiration")
                 onTokenExpired()
@@ -361,7 +368,7 @@ class ApiService {
     
     func updateNewFeed<T: Decodable>(
         to endpoint: String,
-        imageData: Data?,
+        imageData: [Data]?,  // Now an optional array of Data
         imageName: String,
         title: String,
         content: String,
@@ -397,13 +404,18 @@ class ApiService {
         body.append("Content-Disposition: form-data; name=\"content\"\r\n\r\n".data(using: .utf8)!)
         body.append("\(content)\r\n".data(using: .utf8)!)
         
-        // Append image data only if it's not nil
+        // Append multiple images using image array if provided
         if let imageData = imageData {
-            body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"\(imageName)\"; filename=\"\(imageName)\"\r\n".data(using: .utf8)!)
-            body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!) // Adjust if using PNG or other formats
-            body.append(imageData)
-            body.append("\r\n".data(using: .utf8)!)
+            for (index, data) in imageData.enumerated() {
+                let fileExtension = "jpeg" // or "png", depending on your image type
+                let fullFileName = imageName.contains(".") ? imageName : "\(imageName)_\(index).\(fileExtension)"
+                
+                body.append("--\(boundary)\r\n".data(using: .utf8)!)
+                body.append("Content-Disposition: form-data; name=\"images[]\"; filename=\"\(fullFileName)\"\r\n".data(using: .utf8)!)
+                body.append("Content-Type: image/\(fileExtension)\r\n\r\n".data(using: .utf8)!)
+                body.append(data)
+                body.append("\r\n".data(using: .utf8)!)
+            }
         }
         
         // Closing boundary
@@ -422,14 +434,9 @@ class ApiService {
             superPrint("Response Body: \(String(data: data, encoding: .utf8) ?? "No response body")")
             
             if (200...299).contains(httpResponse.statusCode) {
-                do {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    return try decoder.decode(T.self, from: data)
-                } catch {
-                    superPrint("Decoding error: \(error)")
-                    throw ApiError.invalidData
-                }
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                return try decoder.decode(T.self, from: data)
             } else if httpResponse.statusCode == 401 {
                 superPrint("Token expired, handling expiration")
                 onTokenExpired()
@@ -443,6 +450,7 @@ class ApiService {
             throw ApiError.networkError
         }
     }
+
     
     func apiPutCall<T: Decodable, U: Encodable>(
         to endpoint: String,

@@ -1,15 +1,16 @@
 import SwiftUI
 
 struct CommentsSheet : View {
-    @Binding var comments : [Comment]
-    var authorName : String
-    var userName : String
-    var userImageUrl : String
+    @EnvironmentObject private var vm : FeedsViewModel
     var onTapCommentReaction : ((CommentSuggestedReaction) -> Void)?
     var onAddComment : ((String) -> Void)?
+    var onUpdateComment : ((String,Int) -> Void)?
+    var onDeleteComment : ((Int) -> Void)?
     @State var commentText : String = ""
+    @FocusState var editingComment : Bool
+    @State var selectedComment : Comment?
     let reactions: [CommentSuggestedReaction] = [
-        .like,
+        .like, 
         .love,
         .tornado,
         .rainbow,
@@ -24,11 +25,13 @@ struct CommentsSheet : View {
             bgColor
             VStack{
                 headingBar
-                CommentBodyView(comments: comments)
+                CommentBodyView(editingComment: _editingComment, commentText: $commentText) { commentId in
+                    onDeleteComment?(commentId)
+                }
                 Spacer()
                 Divider()
                     .foregroundColor(Color(uiColor: #colorLiteral(red: 0.5741485357, green: 0.5741624236, blue: 0.574154973, alpha: 1)))
-                ScrollView(.horizontal){
+                ScrollView(.horizontal) {
                     LazyHStack{
                         ForEach(reactions,id: \.id) { reaction in
                             EachCommentReaction(onTapReaction: { reaction in
@@ -63,20 +66,25 @@ struct EachCommentReaction : View {
                 .padding()
         }.onAppear{
             withAnimation(Animation.bouncy().repeatForever(autoreverses: true)) {
-                    isLarge.toggle()
-                }
+                isLarge.toggle()
+            }
         }
     }
 }
 
 struct CommentBodyView : View {
-    @State var comments : [Comment]
+    @EnvironmentObject private var vm: FeedsViewModel
+    @FocusState var editingComment : Bool
+    @Binding var commentText : String
+    var onDeleteComment : ((Int) -> Void )?
     var body: some View {
-        if !comments.isEmpty {
+        if !vm.selectedFeed!.comments.isEmpty {
             ScrollView{
                 LazyVStack{
-                    ForEach(comments,id: \.id){comment in
-                        EachComment(comment: comment)
+                    ForEach(vm.selectedFeed!.comments,id: \.id){comment in
+                        EachComment(comment: comment, commentText: $commentText,editingComment: _editingComment) { commentId in
+                            onDeleteComment?(commentId)
+                        }
                     }
                 }
             }
@@ -101,12 +109,13 @@ extension CommentsSheet {
         HStack{
             NetworkImageProfile(imageUrlInString: AppConstants.dummyModelProfile, imageHeight: 40, imageWidth: 40)
             TextField("Add a comment...", text: $commentText)
+                .focused($editingComment)
                 .overlay {
                     if !commentText.isEmpty {
                         HStack(){
                             Spacer()
                             Button{
-                                onAddComment?(commentText)
+                                editingComment ? onUpdateComment?(commentText,1) : onAddComment?(commentText)
                                 commentText = ""
                             }label: {
                                 Image(systemName: "arrow.up.circle.fill")
@@ -145,6 +154,11 @@ extension CommentsSheet {
 
 struct EachComment : View {
     @State var comment : Comment
+    @Binding var commentText : String
+    @EnvironmentObject private var profileVM : ProfileViewModel
+    @EnvironmentObject private var vm : FeedsViewModel
+    @FocusState var editingComment
+    var onDeleteComment : ((Int) -> Void)?
     var body: some View {
         HStack{
             NetworkImageProfile(imageUrlInString: AppConstants.dummyModelProfile, imageHeight: 45, imageWidth: 45)
@@ -156,6 +170,16 @@ struct EachComment : View {
                         if let timeStamp = convertDateString(dateInString){
                             Text(timeStamp)
                                 .font(.system(size: 14,weight: .medium))
+                        }
+                    }
+                    
+                    if profileVM.userDetail?.id == comment.author.id {
+                        Button {
+                            onDeleteComment?(comment.id)
+                        } label: {
+                            Text("delete")
+                                .font(.system(size: 12,weight: .regular))
+                                .foregroundColor(.secondary)
                         }
                     }
                 }
@@ -179,10 +203,31 @@ struct EachComment : View {
                         .frame(width: 16, height: 15)
                         .foregroundColor(.secondary)
                 }
-                Text("\(String(Int.random(in: 1...10)))k")
-                    .font(.system(size: 12,weight: .regular))
+                Text("\(String(Int.random(in: 1..<100)))")
+                    .font(.system(size: 10,weight: .regular))
             }
             
+        }
+        .contextMenu {
+            Button(action: {
+            }) {
+                Text("Like")
+                Image(systemName: Reaction.like.systemImage(for: .reacted))
+            }
+            Button{
+                commentText = comment.content
+                editingComment = true
+            }label: {
+                Text("Edit")
+                Image(systemName: "pencil")
+            }
+            
+            Button(role : .destructive){
+                onDeleteComment?(comment.id)
+            } label: {
+                Text("Delete")
+                Image(systemName: "trash")
+            }
         }
         .padding(.bottom, 10)
         .padding(.horizontal, 10)

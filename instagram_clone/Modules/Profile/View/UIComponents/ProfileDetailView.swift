@@ -14,9 +14,10 @@ struct ProfileDetailView: View {
                             .fontWeight(.bold)
                         Spacer()
                     }
+                    .padding(.horizontal,15)
+                    .padding(.top, guestView ? 15 : 0)
                     HStack{
                         Spacer()
-                        
                         if let image = vm.userDetail!.image {
                             NetworkImage(imageUrlInString: "https://social.petsentry.info\(image)", imageHeight: 70, imageWidth: 70)
                                 .clipShape(Circle())
@@ -33,19 +34,27 @@ struct ProfileDetailView: View {
                         EachTextColumn(caption: String(Int.random(in: 150...999)), data: "Following")
                         Spacer()
                     }
+                    .padding(.horizontal,15)
                     Text(vm.userDetail!.name).padding(.top, 15)
                         .fontWeight(.bold)
+                    
+                    .padding(.horizontal,15)
                     if let bio = vm.userDetail?.bio {
                         Text(bio)
                             .fontWeight(.medium)
+                        
+                        .padding(.horizontal,15)
                     }else {
                         Text("No bio :(")
                             .fontWeight(.medium)
+                        
+                        .padding(.horizontal,15)
                     }
                 }
                 ScrollView{
                     editButtons
                 }
+                .scrollIndicators(.never)
             }
             .navigationDestination(isPresented: $vm.navigateToProfileEdit, destination: {
                 EditProfilePage()
@@ -88,6 +97,10 @@ extension ProfileDetailView {
                     
                 }
             }
+            Button{}label: {
+                Text("Liked posts")
+                    .foregroundColor(.white)
+            }
             HStack{
                 Spacer()
                 Text(guestView ? "\(vm.userDetail!.name)'s moments" : "Your moments")
@@ -112,13 +125,15 @@ extension ProfileDetailView {
     }
 }
 
-struct EachTextColumn : View {
-    var caption : String
-    var data : String
+struct EachTextColumn: View {
+    var caption: String
+    var data: String
+    
     var body: some View {
-        VStack{
+        VStack {
             Text(caption)
             Text(data)
+                .contentTransition(.numericText())
         }
     }
 }

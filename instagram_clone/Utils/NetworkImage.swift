@@ -8,12 +8,10 @@ struct NetworkImage: View {
         AsyncImage(url: URL(string: (imageUrlInString))){phase in
             switch phase {
             case .empty:
-                ProgressView()
-                    .foregroundColor(.primary)
-                //                Rectangle()
-                //                    .frame(width: imageWidth,height: imageHeight)
-                //                    .foregroundColor(.gray)
-                //                    .redacted(reason: .placeholder)
+                Rectangle()
+                    .frame(width: imageWidth,height: imageHeight)
+                    .foregroundColor(.gray)
+                    .redacted(reason: .placeholder)
             case .success(let image):
                 image
                     .resizable()
@@ -41,8 +39,13 @@ struct NetworkImageProfile: View {
         AsyncImage(url: URL(string: (imageUrlInString))){phase in
             switch phase {
             case .empty:
-                ProgressView()
-                    .foregroundColor(.primary)
+                Rectangle()
+                    .fill(Color(uiColor: #colorLiteral(red: 0.2605186105, green: 0.2605186105, blue: 0.2605186105, alpha: 1)))
+                    .frame(maxWidth: imageWidth , maxHeight: imageHeight )
+                    .clipShape(.circle)
+                    .overlay {
+                        ProgressView()
+                    }
             case .success(let image):
                 image
                     .resizable()
@@ -50,12 +53,14 @@ struct NetworkImageProfile: View {
                     .frame(maxWidth: imageWidth , maxHeight: imageHeight )
                     .clipShape(.circle)
             case .failure:
-                Image(systemName: "person.circle")
-                    .frame(maxWidth: imageWidth , maxHeight: imageHeight)
+                Rectangle()
+                    .fill(Color(uiColor: #colorLiteral(red: 0.2605186105, green: 0.2605186105, blue: 0.2605186105, alpha: 1)))
+                    .frame(maxWidth: imageWidth , maxHeight: imageHeight )
                     .clipShape(.circle)
             default:
-                Image(systemName: "person.circle")
-                    .frame(maxWidth: imageWidth , maxHeight: imageHeight)
+                Rectangle()
+                    .fill(Color(uiColor: #colorLiteral(red: 0.2605186105, green: 0.2605186105, blue: 0.2605186105, alpha: 1)))
+                    .frame(maxWidth: imageWidth , maxHeight: imageHeight )
                     .clipShape(.circle)
             }}
     }

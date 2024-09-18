@@ -25,7 +25,7 @@ final class RegisterViewModel: ObservableObject {
         superPrint(body)
         
         do{
-            let response : Any = try await ApiService.shared.apiPostCall(to : ApiEndPoints.registerUser,body: body, as: RegisterModel.self,xNeedToken: false);
+            let _ : Any = try await ApiService.shared.apiPostCall(to : ApiEndPoints.registerUser,body: body, as: RegisterModel.self,xNeedToken: false);
             registerSuccess = true
             await MainActor.run {
                 resetValues()

@@ -103,7 +103,8 @@ struct AddFeedsPage: View {
             Task{
                 if let photosPickerItem,
                    let data = try? await photosPickerItem.loadTransferable(type: Data.self) {
-                    vm.selectedImageInData = data
+                    vm.selectedImageInData.removeAll()
+                    vm.selectedImageInData.append(data)
                     if let image = UIImage(data: data){
                         vm.selectedImageInFile = image
                     }

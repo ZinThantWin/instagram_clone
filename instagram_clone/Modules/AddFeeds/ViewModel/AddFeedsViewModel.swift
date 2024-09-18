@@ -4,7 +4,7 @@ import PhotosUI
 final class AddFeedsViewModel : ObservableObject {
     @Published var selectedImageInUrl : String?
     @Published var selectedImageInFile : UIImage?
-    @Published var selectedImageInData : Data?
+    @Published var selectedImageInData : [Data] = []
     @Published var title : String = ""
     @Published var content : String = ""
     @Published var showSuccessAlert : Bool = false
@@ -15,28 +15,28 @@ final class AddFeedsViewModel : ObservableObject {
     
     func uploadNewFeed()async{
         do {
-            let _ : Any = try await ApiService.shared.uploadNewFeed(to: ApiEndPoints.posts, imageData: selectedImageInData, imageName: "image", title: title, content: content, as: AddFeedsModel.self)
+            let _ : Any = try await ApiService.shared.uploadNewFeed(to: ApiEndPoints.posts, imageData: selectedImageInData, imageName: "images", title: title, content: content, as: AddFeedsModel.self)
             await MainActor.run {
                 title = ""
                 content = ""
                 selectedImageInFile = nil
-                selectedImageInData = nil
+                selectedImageInData.removeAll()
                 showSuccessAlert = true
             }
         } catch{
             superPrint("image upload error \(error)" )
-            showErrorAlert = true
+        showErrorAlert = true
         }
     }
     
     func updateNewFeed(for postId : Int)async{
         do {
-            let _ : Any = try await ApiService.shared.updateNewFeed(to: "\(ApiEndPoints.posts)/\(postId)", imageData: selectedImageInData, imageName: "image", title: title, content: content, as: AddFeedsModel.self)
+            let _ : Any = try await ApiService.shared.updateNewFeed(to: "\(ApiEndPoints.posts)/\(postId)", imageData: selectedImageInData, imageName: "images", title: title, content: content, as: AddFeedsModel.self)
             await MainActor.run {
                 title = ""
                 content = ""
                 selectedImageInFile = nil
-                selectedImageInData = nil
+                selectedImageInData.removeAll()
                 showSuccessAlert = true
                 editingAddedFeed = false
             }

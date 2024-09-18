@@ -3,31 +3,13 @@ import SwiftUI
 struct HomePage: View {
     @EnvironmentObject private var vm : HomeViewModel
     
-    init() {
-        // Customize Tab Bar appearance
-        let tabBarAppearance = UITabBarAppearance()
-        tabBarAppearance.backgroundColor = .black
-        
-        UITabBar.appearance().standardAppearance = tabBarAppearance
-        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
-        
-        
-        let navigationBarAppearance = UINavigationBarAppearance()
-        navigationBarAppearance.backgroundColor = .black
-        navigationBarAppearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-        
-        UINavigationBar.appearance().standardAppearance = navigationBarAppearance
-        UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
-    }
-    
     var body: some View {
         ZStack{
             bgImage
             myTabView
             .background(.black)
-            .navigationTitle("Instagram")
-            .navigationSplitViewStyle(.balanced)
             .navigationBarBackButtonHidden(true)
+            .navigationSplitViewStyle(.balanced)
         }
     }
 }

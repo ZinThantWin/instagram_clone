@@ -5,6 +5,7 @@ struct instagram_cloneApp: App {
     
     @StateObject private var profileVM = ProfileViewModel.shared
     @StateObject private var registerViewModel = RegisterViewModel()
+    @StateObject private var suggestedFriendVM = SuggestedFriendViewModel()
     @StateObject private var homeVM = HomeViewModel()
     @StateObject private var addFeedVM = AddFeedsViewModel()
     @StateObject private var feedsVm : FeedsViewModel = FeedsViewModel(profileVM: ProfileViewModel.shared)
@@ -12,7 +13,7 @@ struct instagram_cloneApp: App {
     @StateObject private var splashVm = SplashScreenViewModel(loginViewModel: LoginViewModel(profileVM: ProfileViewModel.shared))
     var body: some Scene {
         WindowGroup {
-            SplashScreen()
+            SplashScreenAnimationPage()
                 .environmentObject(registerViewModel)
                 .environmentObject(loginVm)
                 .environmentObject(feedsVm)
@@ -20,6 +21,7 @@ struct instagram_cloneApp: App {
                 .environmentObject(splashVm )
                 .environmentObject(homeVM )
                 .environmentObject(addFeedVM )
+                .environmentObject(suggestedFriendVM )
         }
     }
 }

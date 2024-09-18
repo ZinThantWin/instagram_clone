@@ -44,6 +44,7 @@ final class LoginViewModel: ObservableObject {
             await MainActor.run { [weak self] in 
                 self?.userProfile = response
                 self?.profileVM.userDetail = response
+                self?.profileVM.ownerDetail = response
             }
         }catch {
             superPrint("update me error \(error)")

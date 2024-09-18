@@ -134,6 +134,7 @@ enum Reaction: String, CaseIterable {
     case haha
     case sad
     case angry
+    case all
     
     enum State {
         case reacted
@@ -152,13 +153,15 @@ enum Reaction: String, CaseIterable {
             return "SAD"
         case .angry:
             return "ANGRY"
+        case .all:
+            return "ALL"
         }
     }
     
     func systemImage(for state: State) -> String {
         switch self {
         case .like:
-            return state == .reacted ? "hand.thumbsup.fill" : "hand.thumbsup"
+            return state == .reacted ? "hand.thumbsup.circle" : "hand.thumbsup"
         case .love:
             return state == .reacted ? "heart.fill" : "heart"
         case .haha:
@@ -167,6 +170,25 @@ enum Reaction: String, CaseIterable {
             return state == .notReacted ? "poweroutlet.type.h" : "poweroutlet.type.h.fill"
         case .angry:
             return state == .notReacted ? "bird.circle" : "bird.circle.fill"
+        case .all:
+            return ""
+        }
+    }
+    
+    func color() -> UIColor  {
+        switch self {
+        case .like:
+            return #colorLiteral(red: 0, green: 0.5898008943, blue: 1, alpha: 1)
+        case .love:
+            return #colorLiteral(red: 1, green: 0.1857388616, blue: 0.5733950138, alpha: 1)
+        case .all:
+            return #colorLiteral(red: 0.2196078449, green: 0.007843137719, blue: 0.8549019694, alpha: 1)
+        case .angry:
+            return #colorLiteral(red: 0.7450980544, green: 0.1568627506, blue: 0.07450980693, alpha: 1)
+        case .haha:
+            return #colorLiteral(red: 0.9686274529, green: 0.78039217, blue: 0.3450980484, alpha: 1)
+        case .sad:
+            return #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
         }
     }
 }
