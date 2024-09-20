@@ -13,8 +13,23 @@ final class FeedsViewModel : ObservableObject{
     @Published var commentToAdd : String = ""
     @Published var selectedReaction : ReactionModel?
     
+    @Published var feedToShare : FeedModel = sampleFeedModel.sampleFeedModel
+    @Published var showShareBottomsheet : Bool = false
+    
     init(profileVM: ProfileViewModel) {
         self.profileVM = profileVM
+    }
+    
+    
+    func sharePost (for postId : Int, title : String)async{
+        let body = ["postId" : postId,"title" : title] as [String : Any]
+        do {
+            let response = try await ApiService.shared.apiPostCallAny(to: ApiEndPoints.share, body: body, as: messageResponseModel.self , xNeedToken: true)
+            superPrint(response)
+        }
+        catch {
+            superPrint(error)
+        }
     }
     
     func getAllFeedList () async {
@@ -58,7 +73,7 @@ final class FeedsViewModel : ObservableObject{
         superPrint("\(ApiEndPoints.comment)/\(commentId)")
         superPrint(ApiService.shared.apiToken)
         do {
-            let response  : Any = try await ApiService.shared.apiDeleteCall(from: "\(ApiEndPoints.comment)/\(commentId)", as: commentDeleteResponseModel.self, xNeedToken: true)
+            let response  : Any = try await ApiService.shared.apiDeleteCall(from: "\(ApiEndPoints.comment)/\(commentId)", as: messageResponseModel.self, xNeedToken: true)
             superPrint(response)
         }
         catch{
@@ -134,6 +149,7 @@ final class FeedsViewModel : ObservableObject{
 struct commentResponseModel : Codable {
     let id : Int
 }
-struct commentDeleteResponseModel : Codable {
+
+struct messageResponseModel : Codable {
     let message : String? 
 }

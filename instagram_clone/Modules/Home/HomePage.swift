@@ -25,21 +25,21 @@ extension HomePage {
                     Image(systemName: "house")
                 }
                 .tag(Tab.home)
-            Text("Search")
-            .tabItem {
-                Image(systemName: "magnifyingglass")
-            }
-            .tag(Tab.search)
+//            Text("Search")
+//            .tabItem {
+//                Image(systemName: "magnifyingglass")
+//            }
+//            .tag(Tab.search)
             AddFeedsPage()
                 .tabItem {
                     Image(systemName: "plus.circle")
                 }
                 .tag(Tab.add)
-            Text("List")
-                .tabItem {
-                    Image(systemName: "list.number")
-                }
-                .tag(Tab.list)
+//            Text("List")
+//                .tabItem {
+//                    Image(systemName: "list.number")
+//                }
+//                .tag(Tab.list)
             ProfilePage()
                 .tabItem {
                     Image(systemName: "person.circle")

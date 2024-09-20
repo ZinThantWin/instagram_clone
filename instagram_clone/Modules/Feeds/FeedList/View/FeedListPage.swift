@@ -29,7 +29,6 @@ struct FeedListPage: View {
                                              onTapReactionCount: {
                                     onTapReactionCount(reactionModel: feed.reactions)
                                 },
-                                             yourFeed: feed.author?.id == profileViewModel.userDetail?.id,
                                              showReactions: $vm.showReactionRow)
                             }
                         } else {
@@ -41,9 +40,6 @@ struct FeedListPage: View {
                 .scrollIndicators(.hidden)
                 .alert(isPresented: $postDeleteSuccess, content: {
                     Alert(title: Text("selected feed deleted successfully!"))
-                })
-                .sheet(item: $vm.selectedProfileDetail, content: { profile in
-                    ProfileDetailView(guestView: true)
                 })
                 .sheet(item: $vm.selectedReaction, content: { selectedReaction in
                     AllReactionSheet(reactionModel: selectedReaction,onTap: { id in

@@ -3,7 +3,7 @@ import PhotosUI
 
 final class AddFeedsViewModel : ObservableObject {
     @Published var selectedImageInUrl : String?
-    @Published var selectedImageInFile : UIImage?
+    @Published var selectedImageInFile : [UIImage] = []
     @Published var selectedImageInData : [Data] = []
     @Published var title : String = ""
     @Published var content : String = ""
@@ -19,13 +19,15 @@ final class AddFeedsViewModel : ObservableObject {
             await MainActor.run {
                 title = ""
                 content = ""
-                selectedImageInFile = nil
+                selectedImageInFile.removeAll()
                 selectedImageInData.removeAll()
                 showSuccessAlert = true
             }
         } catch{
             superPrint("image upload error \(error)" )
-        showErrorAlert = true
+            await MainActor.run {
+                showErrorAlert = true
+            }
         }
     }
     
@@ -35,7 +37,7 @@ final class AddFeedsViewModel : ObservableObject {
             await MainActor.run {
                 title = ""
                 content = ""
-                selectedImageInFile = nil
+                selectedImageInFile.removeAll()
                 selectedImageInData.removeAll()
                 showSuccessAlert = true
                 editingAddedFeed = false

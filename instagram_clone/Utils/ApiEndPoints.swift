@@ -36,4 +36,7 @@ class ApiEndPoints {
     // Follow
     static let follow : String = "follows/follow"
     static let unfollow : String = "follows/unfollow"
+    
+    // Share
+    static let share : String = "shares"
 }

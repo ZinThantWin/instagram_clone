@@ -74,6 +74,7 @@
 		53DDECD52C941E19001B4DFE /* m_SuggestedFriend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53DDECD42C941E19001B4DFE /* m_SuggestedFriend.swift */; };
 		53DDECD72C9420EB001B4DFE /* w_SuggestFriendList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53DDECD62C9420EB001B4DFE /* w_SuggestFriendList.swift */; };
 		53E445BF2C79ABB5003D50AA /* NetworkImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E445BE2C79ABB5003D50AA /* NetworkImage.swift */; };
+		53E8B6002C9AE6370023E217 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E8B5FF2C9AE6370023E217 /* ShareSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -144,6 +145,7 @@
 		53DDECD42C941E19001B4DFE /* m_SuggestedFriend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = m_SuggestedFriend.swift; sourceTree = "<group>"; };
 		53DDECD62C9420EB001B4DFE /* w_SuggestFriendList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = w_SuggestFriendList.swift; sourceTree = "<group>"; };
 		53E445BE2C79ABB5003D50AA /* NetworkImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkImage.swift; sourceTree = "<group>"; };
+		53E8B5FF2C9AE6370023E217 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -376,6 +378,7 @@
 				539CBF0B2C783EEA005F81A9 /* EachTabIcon.swift */,
 				53DD5DB02C81A0FA00060F9B /* CommentsSheet.swift */,
 				537DF7E22C92A5F7007DA20C /* AllReactionSheet.swift */,
+				53E8B5FF2C9AE6370023E217 /* ShareSheet.swift */,
 			);
 			path = UI_Components;
 			sourceTree = "<group>";
@@ -627,6 +630,7 @@
 				534E0C4E2C8856B700D8BA40 /* EditDetailPage.swift in Sources */,
 				53452D5B2C7476F400C3E406 /* RegisterViewModel.swift in Sources */,
 				534E0C532C898E1100D8BA40 /* EditProfileDetailModel.swift in Sources */,
+				53E8B6002C9AE6370023E217 /* ShareSheet.swift in Sources */,
 				533C58DC2C822D1500A89380 /* ProfileDetailView.swift in Sources */,
 				539CBF082C7745A2005F81A9 /* SplashScreenViewModel.swift in Sources */,
 				539CBF052C772DE1005F81A9 /* ToastView.swift in Sources */,

@@ -11,7 +11,7 @@ import PhotosUI
 struct AddFeedsPage: View {
     @EnvironmentObject private var vm : AddFeedsViewModel
     @EnvironmentObject private var homeVM : HomeViewModel
-    @State private var photosPickerItem : PhotosPickerItem?
+    @State private var photosPickerItems : [PhotosPickerItem] = []
     var body: some View {
         VStack{
             HStack{
@@ -51,21 +51,25 @@ struct AddFeedsPage: View {
                 if let imageUrl = vm.selectedImageInUrl {
                     NetworkImage(imageUrlInString: "https://social.petsentry.info\(imageUrl)", imageHeight: UIScreen.main.bounds.height * 0.4, imageWidth: .infinity)
                 }
-                else if let selectedImage = vm.selectedImageInFile {
-                    Image(uiImage: selectedImage)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height * 0.4)
-                }else{
-                    VStack{
-                        PhotosPicker(selection: $photosPickerItem) {
-                            Image(systemName: "photo.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 50,height: 50)
+                else if !vm.selectedImageInFile.isEmpty {
+                    let column = Array(repeating: GridItem(.flexible()), count: 2)
+                    ScrollView{
+                        LazyVGrid(columns: column) {
+                            ForEach(vm.selectedImageInFile,id: \.self){image in
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(maxHeight: 200)
+                                    .cornerRadius(5)
+                            }
                         }
-                        Text("add image")
-                            .foregroundColor(.black)
+                    }.scrollIndicators(.hidden)
+                }else{
+                    PhotosPicker(selection: $photosPickerItems,maxSelectionCount: 9,matching: .images) {
+                        Image(systemName: "photo.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 50,height: 50)
                     }
                     .frame(maxWidth: .infinity,maxHeight: 100)
                 }
@@ -99,18 +103,20 @@ struct AddFeedsPage: View {
         .alert(isPresented: $vm.showSuccessAlert, content: {
             Alert(title: Text("moment share success!"))
         })
-        .onChange(of: photosPickerItem) { oldValue, newValue in
-            Task{
-                if let photosPickerItem,
-                   let data = try? await photosPickerItem.loadTransferable(type: Data.self) {
-                    vm.selectedImageInData.removeAll()
-                    vm.selectedImageInData.append(data)
-                    if let image = UIImage(data: data){
-                        vm.selectedImageInFile = image
+        .onChange(of: photosPickerItems) { oldValue, newValue in
+            Task {
+                vm.selectedImageInData.removeAll() // Clear the old data first
+                for item in photosPickerItems {
+                    if let data = try? await item.loadTransferable(type: Data.self) {
+                        vm.selectedImageInData.append(data)
+                        if let image = UIImage(data: data) {
+                            vm.selectedImageInFile.append(image)
+                        }
                     }
                 }
             }
         }
+        
     }
 }
 

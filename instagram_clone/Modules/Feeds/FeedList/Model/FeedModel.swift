@@ -9,6 +9,10 @@ struct AllReactionModel : Codable {
     let users : [AuthorModel]
 }
 
+struct ShareByModel : Codable {
+    let author : AuthorModel
+}
+
 struct ReactionModel : Codable , Identifiable {
     let id: UUID = UUID()
     let all : AllReactionModel
@@ -35,6 +39,7 @@ struct FeedModel: Codable {
     let title: String
     let content: String?
     let author : AuthorModel?
+    let shareByUser : ShareByModel?
     let images: [String]
     let createdAt: String?
     let reactionCount: Int?
@@ -46,5 +51,5 @@ struct FeedModel: Codable {
 }
 
 struct sampleFeedModel {
-    static let sampleFeedModel = FeedModel(id: 1, title: "sample title", content: "This is sample content", author: AuthorModel(id: 23, name: "dummy author", image: ""), images: ["/uploads/1723630534266.jpg"], createdAt: "2024-08-14T10:15:34.589Z", reactionCount: 3,isEdited: true,comments: [Comment(id: 10, content: "ဖုန်ရှုလိုက်", author: AuthorModel(id: 1, name: "Dummy commenter", image: nil),updatedAt: "2024-09-07T04:36:28.272Z", isEdited : false)],reactions:  ReactionModel(all: AllReactionModel(count: 1, users: [AuthorModel(id: 1, name: "", image: nil )]), like: [AuthorModel(id: 1, name: "", image: nil )], love: [AuthorModel(id: 1, name: "", image: nil )], haha: [AuthorModel(id: 1, name: "", image: nil )], sad: [AuthorModel(id: 1, name: "", image: nil )],angry: [AuthorModel(id: 1, name: "", image: nil )]))
+    static let sampleFeedModel = FeedModel(id: 1, title: "sample title", content: "This is sample content", author: AuthorModel(id: 23, name: "dummy author", image: ""), shareByUser: nil , images: ["/uploads/1723630534266.jpg"], createdAt: "2024-08-14T10:15:34.589Z", reactionCount: 3,isEdited: true,comments: [Comment(id: 10, content: "ဖုန်ရှုလိုက်", author: AuthorModel(id: 1, name: "Dummy commenter", image: nil),updatedAt: "2024-09-07T04:36:28.272Z", isEdited : false)],reactions:  ReactionModel(all: AllReactionModel(count: 1, users: [AuthorModel(id: 1, name: "", image: nil )]), like: [AuthorModel(id: 1, name: "", image: nil )], love: [AuthorModel(id: 1, name: "", image: nil )], haha: [AuthorModel(id: 1, name: "", image: nil )], sad: [AuthorModel(id: 1, name: "", image: nil )],angry: [AuthorModel(id: 1, name: "", image: nil )]))
 }

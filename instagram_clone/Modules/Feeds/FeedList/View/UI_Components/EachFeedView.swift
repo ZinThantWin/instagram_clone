@@ -10,12 +10,94 @@ struct EachFeedView : View {
     var onTapEditFeed : (() -> Void)?
     var onTapDeleteFeed : (() -> Void)?
     var onTapReactionCount : (() -> Void)?
-    @State var yourFeed : Bool?
     @State private var scale: CGFloat = 1.0
     @Binding var showReactions: Bool
     @State private var showImagePreview: Bool = false
+    @EnvironmentObject private var vm : FeedsViewModel
+    @EnvironmentObject private var profileVm : ProfileViewModel
+    @State private var isShareFeed : Bool = false
+    @State private var isYourFeed : Bool = false
     private let pagePadding: Double = 10
     var body: some View {
+        NavigationStack{
+            VStack{
+                if let shareByUser = eachFeed.shareByUser {
+                    HStack{
+                        Button {
+                            onTapProfile()
+                        } label: {
+                            if let profileImage = shareByUser.author.image {
+                                CachedAsyncImage(url: URL(string: "https://social.petsentry.info\(profileImage)")!, width: 50, height: 50, isCircle: true)
+                            } else {
+                                DummyProfile(size: 50)
+                            }
+                        }
+                        VStack(alignment: .leading){
+                            HStack{
+                                Text(shareByUser.author.name)
+                                    .foregroundColor(.primary)
+                                    .font(.body)
+                                    .fontWeight(.semibold)
+                                Image(systemName: "flame.circle")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 15, height: 15)
+                                    .foregroundStyle(.orange)
+                                Spacer()
+                                if isYourFeed {
+                                    menu
+                                }
+                            }
+                            if let edited = eachFeed.isEdited {
+                                Text(edited ? "Edited" : "suggested for you")
+                                    .foregroundColor(.primary)
+                                    .font(.caption)
+                            } else {
+                                Text("suggested for you")
+                                    .foregroundColor(.primary)
+                                    .font(.caption)
+                            }
+                            
+                        }
+                    }
+                    .padding(.horizontal, pagePadding)
+                    .padding(.top, 10)
+                    feedView
+                        .padding(.all,15)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 2)
+                                .stroke(Color.gray, lineWidth: 1)
+                        )
+                    reactionRow
+                        .padding(.bottom, 20)
+                }else {
+                    feedView
+                }
+            }
+            .onAppear{
+                isShareFeed = eachFeed.shareByUser != nil
+                if let shareByUser = eachFeed.shareByUser {
+                    isYourFeed = shareByUser.author.id == profileVm.ownerDetail?.id
+                }else{
+                    isYourFeed = eachFeed.author?.id == profileVm.ownerDetail?.id
+                }
+                
+            }
+            .fullScreenCover(item: $vm.selectedProfileDetail, content: { profile in
+                ProfileDetailView(guestView: true)
+            })
+            .sheet(isPresented: $vm.showShareBottomsheet, content: {
+                ShareSheet()
+                    .presentationDetents([.height(200)])
+                    .presentationDragIndicator(.hidden)
+            })
+        }
+    }
+}
+
+extension EachFeedView {
+    
+    private var feedView : some View{
         ZStack{
             if showReactions {
                 Rectangle()
@@ -43,13 +125,25 @@ struct EachFeedView : View {
                 .padding(.horizontal, pagePadding)
                 .padding(.bottom, pagePadding)
                 
-                if let url = eachFeed.images.first{
-                    if !url.isEmpty {
-                        CachedAsyncImage(url: URL(string: "https://social.petsentry.info\(url)")!, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.4, isCircle: false)
+                if !eachFeed.images.isEmpty {
+                    TabView {
+                        ForEach(eachFeed.images, id: \.self) { each in
+                            CachedAsyncImage(
+                                url: URL(string: "https://social.petsentry.info\(each)")!,
+                                width: UIScreen.main.bounds.width,
+                                height: UIScreen.main.bounds.height * 0.4,
+                                isCircle: false
+                            )
+                            .cornerRadius(3)
+                        }
                     }
+                    .tabViewStyle(.page(indexDisplayMode: .automatic))
+                    .frame(height: UIScreen.main.bounds.height * 0.4)
                 }
                 
-                reactionRow
+                if !isShareFeed{
+                    reactionRow
+                }
                 
                 VStack(alignment: .leading){
                     if !eachFeed.title.isEmpty {
@@ -81,12 +175,9 @@ struct EachFeedView : View {
                     
                 }.padding(.horizontal, pagePadding)
             }
-            .padding(.top, 30)
+            .padding(.top, isShareFeed ? 5 : 30)
         }
     }
-}
-
-extension EachFeedView {
     
     private var menu : some View{
         Menu{
@@ -129,19 +220,22 @@ extension EachFeedView {
                     onTapReactionCount?()
                 }label: {
                     Text("\(String(reactions.all.users.count))")
-                    .contentTransition(.numericText(countsDown: true))
+                        .contentTransition(.numericText(countsDown: true))
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
                 }
-            } 
+            }
             
             EachFeedIcon(icon: "bubble.right",iconColor: .white, action: {
                 onTapComments()
             }).padding(.leading, 10)
             Text("\(String(eachFeed.comments.count))")
                 .fontWeight(.semibold)
-            EachFeedIcon(icon: "paperplane", iconColor: .white,action: {})
-                .padding(.leading, 10)
+            EachFeedIcon(icon: "paperplane", iconColor: .white,action: {
+                vm.showShareBottomsheet = true
+                vm.feedToShare = eachFeed
+            })
+            .padding(.leading, 10)
             if let count = eachFeed.reactionCount {
                 Text("\(String(count))")
                     .fontWeight(.semibold)
@@ -206,10 +300,8 @@ extension EachFeedView {
                     .frame(width: 15, height: 15)
                     .foregroundStyle(.orange)
                 Spacer()
-                if let yourFeed = yourFeed {
-                    if yourFeed {
-                        menu
-                    }
+                if isYourFeed && !isShareFeed{
+                    menu
                 }
             }
             if let edited = eachFeed.isEdited {
@@ -304,4 +396,6 @@ struct EachFeedIcon : View {
     
     
 }
+
+
 
