@@ -26,7 +26,7 @@ struct ShareSheet : View {
             Button{
                 Task {
                     await vm.sharePost(for: vm.feedToShare.id, title: shareTitle)
-                    vm.showReactionRow = false
+                    await vm.getFollowedFeedList()
                     vm.selectedFeed = nil
                     shareTitle = ""
                     vm.showShareBottomsheet = false

@@ -11,6 +11,8 @@ struct AllReactionModel : Codable {
 
 struct ShareByModel : Codable {
     let author : AuthorModel
+    let sharePostId : Int?
+    let sharePostTitle : String?
 }
 
 struct ReactionModel : Codable , Identifiable {

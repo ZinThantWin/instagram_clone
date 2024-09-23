@@ -451,117 +451,67 @@ class ApiService {
         }
     }
 
-    
-    func apiPutCall<T: Decodable, U: Encodable>(
+    func apiPutCall<T: Decodable>(
         to endpoint: String,
-        body: U,
+        body: [String: Any],
         as type: T.Type,
         xNeedToken: Bool = true
     ) async throws -> T {
+        // Validate the endpoint URL
         guard let url = URL(string: "\(baseUrl)\(endpoint)") else {
             throw ApiError.invalidURL
         }
         
+        // Create a URLRequest with basic configurations
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         request.timeoutInterval = 30.0
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        // Conditionally set the Authorization header if token is needed
         if xNeedToken {
             request.setValue("Bearer \(apiToken)", forHTTPHeaderField: "Authorization")
         }
         
+        // Serialize the body into JSON
         do {
-            let encoder = JSONEncoder()
-            encoder.keyEncodingStrategy = .convertToSnakeCase
-            let bodyData = try encoder.encode(body)
+            let bodyData = try JSONSerialization.data(withJSONObject: body, options: [])
             request.httpBody = bodyData
         } catch {
-            superPrint("Encoding error: \(error)")
+            superPrint("Serialization error: \(error.localizedDescription)")
             throw ApiError.invalidData
         }
         
-        do {
-            let (data, response) = try await URLSession.shared.data(for: request)
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw ApiError.invalidResponse
-            }
-            
-            superPrint("\(httpResponse.statusCode) \(endpoint)")
-            
-            if (200...299).contains(httpResponse.statusCode) {
-                do {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    return try decoder.decode(T.self, from: data)
-                } catch {
-                    superPrint("Decoding error: \(error)")
-                    throw ApiError.invalidData
-                }
-            } else if httpResponse.statusCode == 401 {
-                superPrint("Token expired, handling expiration")
-                onTokenExpired()
-                throw ApiError.tokenExpired
-            } else {
-                superPrint("Unexpected status code: \(httpResponse.statusCode)")
-                throw ApiError.invalidResponse
-            }
-        } catch {
-            superPrint("Network request failed: \(error)")
-            throw ApiError.networkError
-        }
+        // Execute the request and decode the response
+        return try await executeRequest(request, responseType: T.self)
     }
+
     
     func apiDeleteCall<T: Decodable>(
         from endpoint: String,
         as type: T.Type,
         xNeedToken: Bool = true
     ) async throws -> T {
+        // Validate the endpoint URL
         guard let url = URL(string: "\(baseUrl)\(endpoint)") else {
             throw ApiError.invalidURL
         }
         
+        // Create a URLRequest with basic configurations
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
         request.timeoutInterval = 30.0
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        // Conditionally set the Authorization header if token is needed
         if xNeedToken {
             request.setValue("Bearer \(apiToken)", forHTTPHeaderField: "Authorization")
         }
         
-        do {
-            let (data, response) = try await URLSession.shared.data(for: request)
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw ApiError.invalidResponse
-            }
-            
-            superPrint("\(httpResponse.statusCode) \(endpoint)")
-            
-            if (200...299).contains(httpResponse.statusCode) {
-                do {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    return try decoder.decode(T.self, from: data)
-                } catch {
-                    superPrint("Decoding error: \(error)")
-                    throw ApiError.invalidData
-                }
-            } else if httpResponse.statusCode == 401 {
-                superPrint("Token expired, handling expiration")
-                onTokenExpired()
-                throw ApiError.tokenExpired
-            } else {
-                superPrint("Unexpected status code: \(httpResponse.statusCode)")
-                throw ApiError.invalidResponse
-            }
-        } catch {
-            superPrint("Network request failed: \(error)")
-            throw ApiError.networkError
-        }
+        // Execute the request and decode the response
+        return try await executeRequest(request, responseType: T.self)
     }
+
     
     
     private func onTokenExpired(){

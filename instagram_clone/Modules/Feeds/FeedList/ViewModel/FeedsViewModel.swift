@@ -6,7 +6,6 @@ final class FeedsViewModel : ObservableObject{
     @Published var selectedFeed : FeedModel?
     @Published var showCommentSheet : Bool = false
     @Published var showProfileFullScreenCover : Bool = false
-    @Published var showReactionRow : Bool = false
     @Published var selectedProfileDetail : ProfileModel?
     private var profileVM: ProfileViewModel
     @Published var searchFeeds : String = ""
@@ -96,7 +95,7 @@ final class FeedsViewModel : ObservableObject{
         let body = ["postId" : postId,
                     "content" : comment] as [String : Any]
         do{
-            let _ : Any  = try await ApiService.shared.apiPostCallAny(to: "\(ApiEndPoints.comment)/\(commentId)", body: body, as: commentResponseModel.self, xNeedToken: true)
+            let _ : Any  = try await ApiService.shared.apiPutCall(to: "\(ApiEndPoints.comment)/\(commentId)", body: body, as: commentResponseModel.self, xNeedToken: true)
         }
         catch{
             superPrint(error)

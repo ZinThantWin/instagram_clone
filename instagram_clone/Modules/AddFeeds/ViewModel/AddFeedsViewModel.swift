@@ -10,7 +10,7 @@ final class AddFeedsViewModel : ObservableObject {
     @Published var showSuccessAlert : Bool = false
     @Published var showErrorAlert : Bool = false
     @Published var editingAddedFeed : Bool = false
-    @Published var feedDeleteSuccess : Bool = true
+    @Published var feedDeleteSuccess : Bool = false
     @Published var feedIdToEdit : Int?
     
     func uploadNewFeed()async{

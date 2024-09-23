@@ -2,21 +2,17 @@ import SwiftUI
 
 struct EachFeedView : View {
     var eachFeed : FeedModel
-    var onTapComments : () -> Void
-    var onTapProfile  : () -> Void
-    var onTapReaction : () -> Void
-    var onLongPressReaction : () -> Void
-    var onReactionSelected: ((Reaction) -> Void)?
-    var onTapEditFeed : (() -> Void)?
-    var onTapDeleteFeed : (() -> Void)?
-    var onTapReactionCount : (() -> Void)?
+    @State private var selectedTab = 0
     @State private var scale: CGFloat = 1.0
-    @Binding var showReactions: Bool
     @State private var showImagePreview: Bool = false
     @EnvironmentObject private var vm : FeedsViewModel
+    @EnvironmentObject private var homeVm : HomeViewModel
     @EnvironmentObject private var profileVm : ProfileViewModel
+    @EnvironmentObject private var addFeedsVm : AddFeedsViewModel
     @State private var isShareFeed : Bool = false
     @State private var isYourFeed : Bool = false
+    @State private var showReactionRow : Bool = false
+    @State private var showProfileDetail : Bool = false
     private let pagePadding: Double = 10
     var body: some View {
         NavigationStack{
@@ -24,7 +20,9 @@ struct EachFeedView : View {
                 if let shareByUser = eachFeed.shareByUser {
                     HStack{
                         Button {
-                            onTapProfile()
+                            Task{
+                                await onTapProfile()
+                            }
                         } label: {
                             if let profileImage = shareByUser.author.image {
                                 CachedAsyncImage(url: URL(string: "https://social.petsentry.info\(profileImage)")!, width: 50, height: 50, isCircle: true)
@@ -62,6 +60,13 @@ struct EachFeedView : View {
                     }
                     .padding(.horizontal, pagePadding)
                     .padding(.top, 10)
+                    if let title = shareByUser.sharePostTitle {
+                        HStack{
+                            Text(title)
+                                .fontWeight(.medium)
+                            Spacer()
+                        }
+                    }
                     feedView
                         .padding(.all,15)
                         .overlay(
@@ -83,13 +88,48 @@ struct EachFeedView : View {
                 }
                 
             }
-            .fullScreenCover(item: $vm.selectedProfileDetail, content: { profile in
+            .fullScreenCover(isPresented: $showProfileDetail, content: {
                 ProfileDetailView(guestView: true)
             })
+            .sheet(item: $vm.selectedReaction, content: { selectedReaction in
+                AllReactionSheet(reactionModel: selectedReaction,onTap: { id in
+                    Task {
+                        await vm.getSelectedProfileDetail(id: String(id))
+                        vm.selectedReaction = nil
+                        showProfileDetail = true
+                    }
+                })
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.hidden)
+            })
             .sheet(isPresented: $vm.showShareBottomsheet, content: {
-                ShareSheet()
+                if #available(iOS 18.0, *) {
+                    ShareSheet()
+                        .presentationSizing(.fitted)
+                        .presentationDragIndicator(.hidden)
+                } else {
+                    ShareSheet()
                     .presentationDetents([.height(200)])
                     .presentationDragIndicator(.hidden)
+                }
+            })
+            .sheet(isPresented: $vm.showCommentSheet, content: {
+                if let feed = vm.selectedFeed {
+                    CommentsSheet(onTapCommentReaction: { reaction in
+                        onAddComments(for: feed, comment: "\(reaction.name()).emoji")
+                    }, onAddComment: {addedComment in
+                        onAddComments(for: feed, comment: addedComment)
+                    }, onUpdateComment : {updatedComment,commentId in
+                        onUpdateComments(for: feed , comment: updatedComment, commentId: commentId)
+                    }, onDeleteComment: { commentId  in
+                        onDeleteComment(commentId)
+                    })
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.hidden)
+                }
+            })
+            .alert(isPresented: $addFeedsVm.feedDeleteSuccess, content: {
+                Alert(title: Text("selected feed deleted successfully!"))
             })
         }
     }
@@ -97,20 +137,92 @@ struct EachFeedView : View {
 
 extension EachFeedView {
     
+    
+    private func giveReaction(for postId : Int){
+        Task {
+            await vm.giveReaction(reactionType: .love, postId: postId)
+        }
+    }
+    
+    private func onDeleteComment(_ id: Int) {
+        Task {
+            await vm.deleteComment(for: id)
+            await vm.getFollowedFeedList()
+            await MainActor.run {
+                if let feedList = vm.allFeedList {
+                    vm.selectedFeed = feedList.data.first(where: {$0.id == vm.selectedFeed?.id})
+                }
+            }
+        }
+    }
+    
+    private func onAddComments(for feed : FeedModel,comment : String){
+        Task{
+            await vm.createNewComment(for: feed.id,comment: comment)
+            await vm.getFollowedFeedList()
+            await MainActor.run {
+                if let feedList = vm.allFeedList {
+                    vm.selectedFeed = feedList.data.first(where: {$0.id == vm.selectedFeed?.id})
+                }
+            }
+        }
+    }
+    
+    private func onUpdateComments(for feed : FeedModel,comment : String,commentId : Int){
+        Task{
+            await vm.updateComment(postId: feed.id, commentId: commentId, comment: comment)
+            await vm.getFollowedFeedList()
+            await MainActor.run {
+                if let feedList = vm.allFeedList {
+                    vm.selectedFeed = feedList.data.first(where: {$0.id == vm.selectedFeed?.id})
+                }
+            }
+        }
+    }
+    
+    private func onDeleteFeed()async{
+        Task{
+            await addFeedsVm.deleteSelectedFeed(for: isShareFeed ? eachFeed.shareByUser?.sharePostId ?? 0: eachFeed.id)
+            await vm.getFollowedFeedList()
+        }
+    }
+    
+    private func onEditFeed()async{
+        Task{
+            addFeedsVm.selectedImageInUrl = eachFeed.images.first
+            addFeedsVm.title = eachFeed.title
+            addFeedsVm.content = eachFeed.content ?? ""
+            addFeedsVm.feedIdToEdit = eachFeed.id
+            homeVm.editFeed(destination: .add,viewModel: addFeedsVm)
+        }
+    }
+    
+    private func onTapProfile()async {
+        Task{
+            let _ = await profileVm.getUserProfile(id: String(eachFeed.author?.id ?? 1))
+            showProfileDetail = true
+        }
+        
+    }
+    
     private var feedView : some View{
+        
         ZStack{
-            if showReactions {
+            if showReactionRow {
                 Rectangle()
                     .fill(.white.opacity(0.000001))
                     .ignoresSafeArea()
                     .onTapGesture {
-                        showReactions = false
+                        showReactionRow = false
                     }
             }
             VStack(alignment: .leading,spacing: 0){
                 HStack{
                     Button {
-                        onTapProfile()
+                        
+                        Task{
+                            await onTapProfile()
+                        }
                     } label: {
                         if let profileImage = eachFeed.author?.image {
                             CachedAsyncImage(url: URL(string: "https://social.petsentry.info\(profileImage)")!, width: 50, height: 50, isCircle: true)
@@ -126,8 +238,8 @@ extension EachFeedView {
                 .padding(.bottom, pagePadding)
                 
                 if !eachFeed.images.isEmpty {
-                    TabView {
-                        ForEach(eachFeed.images, id: \.self) { each in
+                    TabView(selection: $selectedTab) {
+                        ForEach(Array(eachFeed.images.enumerated()), id: \.offset) { index, each in
                             CachedAsyncImage(
                                 url: URL(string: "https://social.petsentry.info\(each)")!,
                                 width: UIScreen.main.bounds.width,
@@ -135,9 +247,10 @@ extension EachFeedView {
                                 isCircle: false
                             )
                             .cornerRadius(3)
+                            .tag(index) // Tagging each view with its index
                         }
                     }
-                    .tabViewStyle(.page(indexDisplayMode: .automatic))
+                    .tabViewStyle(.page(indexDisplayMode: .always))
                     .frame(height: UIScreen.main.bounds.height * 0.4)
                 }
                 
@@ -157,7 +270,7 @@ extension EachFeedView {
                     }
                     if !eachFeed.comments.isEmpty {
                         Button{
-                            onTapComments()
+                            vm.onTapViewComments(eachFeed)
                         }label: {
                             Text("view all comments")
                                 .foregroundColor(.secondary)
@@ -182,7 +295,9 @@ extension EachFeedView {
     private var menu : some View{
         Menu{
             Button{
-                onTapEditFeed?()
+                Task{
+                    await onEditFeed()
+                }
             }label: {
                 HStack{
                     Image(systemName: "pencil")
@@ -190,7 +305,9 @@ extension EachFeedView {
                 }
             }
             Button(role: .destructive){
-                onTapDeleteFeed?()
+                Task{
+                    await onDeleteFeed()
+                }
             }label: {
                 HStack{
                     Image(systemName: "trash")
@@ -217,7 +334,7 @@ extension EachFeedView {
             
             if let reactions = eachFeed.reactions {
                 Button{
-                    onTapReactionCount?()
+                    onTapReactionCount(reactionModel: reactions)
                 }label: {
                     Text("\(String(reactions.all.users.count))")
                         .contentTransition(.numericText(countsDown: true))
@@ -227,7 +344,7 @@ extension EachFeedView {
             }
             
             EachFeedIcon(icon: "bubble.right",iconColor: .white, action: {
-                onTapComments()
+                vm.onTapViewComments(eachFeed)
             }).padding(.leading, 10)
             Text("\(String(eachFeed.comments.count))")
                 .fontWeight(.semibold)
@@ -245,11 +362,11 @@ extension EachFeedView {
         .padding(.top, 15)
         .padding(.horizontal, 10)
         .overlay {
-            if showReactions {
+            if showReactionRow {
                 HStack{
                     ForEach(Reaction.allCases.dropLast(), id : \.self) {reaction in
                         Button{
-                            onReactionSelected?(reaction)
+                            onReactionSelected(reaction, eachFeed)
                         }label: {
                             Image(systemName: reaction.systemImage(for: .notReacted))
                                 .resizable()
@@ -367,13 +484,24 @@ extension EachFeedView {
     private var reactionGesture: some Gesture {
         TapGesture()
             .onEnded {
-                onTapReaction()
+                giveReaction(for: eachFeed.id)
             }
             .simultaneously(with: LongPressGesture(minimumDuration: 0.5)
                 .onEnded { _ in
-                    onLongPressReaction()
+                    showReactionRow = true
                 }
             )
+    }
+    
+    private func onTapReactionCount(reactionModel : ReactionModel?) {
+        vm.selectedReaction = reactionModel
+    }
+    
+    private func onReactionSelected(_ reaction: Reaction, _ feed: FeedModel) {
+        Task {
+            await vm.giveReaction(reactionType: reaction, postId: feed.id)
+            showReactionRow = false
+        }
     }
 }
 

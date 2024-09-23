@@ -1,8 +1,11 @@
-//
-//  StoryModel.swift
-//  instagram_clone
-//
-//  Created by ကင်ဇို on 23/09/2024.
-//
-
 import Foundation
+
+
+struct StoryModel : Codable{
+    let id: Int
+    let content: String
+    let image: String?
+    let createdAt: String 
+    let expiresAt: String
+    let author : AuthorModel
+}

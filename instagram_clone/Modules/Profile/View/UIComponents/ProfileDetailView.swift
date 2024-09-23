@@ -4,11 +4,19 @@ struct ProfileDetailView: View {
     @State var guestView : Bool = false
     @EnvironmentObject private var vm : ProfileViewModel
     @EnvironmentObject private var feedsViewModel : FeedsViewModel
+    @Environment(\.presentationMode) var presentationMode
     var body: some View {
         NavigationStack {
             VStack{
                 VStack(alignment: .leading){
                     HStack{
+                        if guestView {
+                            Button{
+                                presentationMode.wrappedValue.dismiss()
+                            }label: {
+                                Text("back")
+                            }
+                        }
                         Spacer()
                         Text(vm.userDetail!.name)
                             .fontWeight(.bold)
@@ -38,17 +46,17 @@ struct ProfileDetailView: View {
                     Text(vm.userDetail!.name).padding(.top, 15)
                         .fontWeight(.bold)
                     
-                    .padding(.horizontal,15)
+                        .padding(.horizontal,15)
                     if let bio = vm.userDetail?.bio {
                         Text(bio)
                             .fontWeight(.medium)
                         
-                        .padding(.horizontal,15)
+                            .padding(.horizontal,15)
                     }else {
                         Text("No bio :(")
                             .fontWeight(.medium)
                         
-                        .padding(.horizontal,15)
+                            .padding(.horizontal,15)
                     }
                 }
                 ScrollView{
@@ -111,15 +119,7 @@ extension ProfileDetailView {
             .padding(.top,20)
             .padding(.top,10)
             ForEach (vm.userDetail!.posts, id: \.id){eachFeed in
-                EachFeedView(eachFeed: eachFeed, onTapComments: {
-                    superPrint("gesture incoming")
-                }, onTapProfile: {
-                    superPrint("gesture incoming")
-                }, onTapReaction: {
-                    superPrint("gesture incoming")
-                }, onLongPressReaction: {
-                    superPrint("gesture incoming")
-                }, showReactions: $feedsViewModel.showReactionRow)
+                EachFeedView(eachFeed: eachFeed)
             }
         }
     }

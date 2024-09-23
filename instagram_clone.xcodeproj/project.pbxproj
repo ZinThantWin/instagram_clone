@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -34,6 +34,7 @@
 		534E0C5C2C8EA94300D8BA40 /* ReactionResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534E0C5B2C8EA94300D8BA40 /* ReactionResponseModel.swift */; };
 		534E0C5E2C8EB5AD00D8BA40 /* CustomDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534E0C5D2C8EB5AD00D8BA40 /* CustomDecoder.swift */; };
 		534E0C7A2C90011200D8BA40 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534E0C792C90011200D8BA40 /* HomeViewModel.swift */; };
+		5350119D2CA15B32007A7367 /* MeshGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5350119C2CA15B32007A7367 /* MeshGradient.swift */; };
 		537DF7E32C92A5F7007DA20C /* AllReactionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 537DF7E22C92A5F7007DA20C /* AllReactionSheet.swift */; };
 		539CBEFE2C771E60005F81A9 /* EachFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539CBEFD2C771E60005F81A9 /* EachFeedView.swift */; };
 		539CBF002C771E90005F81A9 /* FeedListPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539CBEFF2C771E90005F81A9 /* FeedListPage.swift */; };
@@ -106,6 +107,7 @@
 		534E0C5B2C8EA94300D8BA40 /* ReactionResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionResponseModel.swift; sourceTree = "<group>"; };
 		534E0C5D2C8EB5AD00D8BA40 /* CustomDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDecoder.swift; sourceTree = "<group>"; };
 		534E0C792C90011200D8BA40 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		5350119C2CA15B32007A7367 /* MeshGradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshGradient.swift; sourceTree = "<group>"; };
 		537DF7E22C92A5F7007DA20C /* AllReactionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllReactionSheet.swift; sourceTree = "<group>"; };
 		539CBEFD2C771E60005F81A9 /* EachFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EachFeedView.swift; sourceTree = "<group>"; };
 		539CBEFF2C771E90005F81A9 /* FeedListPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedListPage.swift; sourceTree = "<group>"; };
@@ -147,6 +149,10 @@
 		53E445BE2C79ABB5003D50AA /* NetworkImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkImage.swift; sourceTree = "<group>"; };
 		53E8B5FF2C9AE6370023E217 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		5350118D2CA11B7E007A7367 /* Story */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Story; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		53452D312C7344C400C3E406 /* Frameworks */ = {
@@ -256,6 +262,7 @@
 				534E0C5D2C8EB5AD00D8BA40 /* CustomDecoder.swift */,
 				53DD7C742C95AC1700D83E63 /* CachedNetworkImage.swift */,
 				53DD7C7D2C98061C00D83E63 /* AnimatedText.swift */,
+				5350119C2CA15B32007A7367 /* MeshGradient.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -329,6 +336,7 @@
 		539CBEF52C771DF1005F81A9 /* Feeds */ = {
 			isa = PBXGroup;
 			children = (
+				5350118D2CA11B7E007A7367 /* Story */,
 				53DDECCF2C941DB6001B4DFE /* SuggestedFriends */,
 				539CBEF62C771DFB005F81A9 /* FeedList */,
 			);
@@ -545,6 +553,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				5350118D2CA11B7E007A7367 /* Story */,
+			);
 			name = instagram_clone;
 			packageProductDependencies = (
 				53DD7C792C97F6E700D83E63 /* SDWebImageSwiftUI */,
@@ -647,6 +658,7 @@
 				53DD5DA72C803BD000060F9B /* AddFeedsPage.swift in Sources */,
 				534E0C552C898E5000D8BA40 /* AllEnums.swift in Sources */,
 				53DD5DB32C81B74200060F9B /* DummyProfile.swift in Sources */,
+				5350119D2CA15B32007A7367 /* MeshGradient.swift in Sources */,
 				539CBF0F2C785239005F81A9 /* HomePage.swift in Sources */,
 				539CBEFE2C771E60005F81A9 /* EachFeedView.swift in Sources */,
 				534E0C5C2C8EA94300D8BA40 /* ReactionResponseModel.swift in Sources */,

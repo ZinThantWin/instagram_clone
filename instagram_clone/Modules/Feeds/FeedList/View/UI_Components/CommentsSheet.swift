@@ -7,11 +7,13 @@ struct CommentsSheet : View {
     var onUpdateComment : ((String,Int) -> Void)?
     var onDeleteComment : ((Int) -> Void)?
     @State var commentText : String = ""
-    @FocusState var editingComment : Bool
+    @FocusState var isTextfieldFocused : Bool
+    @State var editingComment : Bool = false
+    @State var editingCommentId : Int?
     @State var selectedComment : Comment?
     let reactions: [CommentSuggestedReaction] = [
-        .like, 
-        .love,
+        .like,
+            .love,
         .tornado,
         .rainbow,
         .bolt,
@@ -25,7 +27,7 @@ struct CommentsSheet : View {
             bgColor
             VStack{
                 headingBar
-                CommentBodyView(editingComment: _editingComment, commentText: $commentText) { commentId in
+                CommentBodyView(editingComment: $editingComment, commentText: $commentText,editingCommentId: $editingCommentId) { commentId in
                     onDeleteComment?(commentId)
                 }
                 Spacer()
@@ -74,15 +76,16 @@ struct EachCommentReaction : View {
 
 struct CommentBodyView : View {
     @EnvironmentObject private var vm: FeedsViewModel
-    @FocusState var editingComment : Bool
+    @Binding  var editingComment : Bool
     @Binding var commentText : String
+    @Binding var editingCommentId : Int?
     var onDeleteComment : ((Int) -> Void )?
     var body: some View {
         if !vm.selectedFeed!.comments.isEmpty {
             ScrollView{
                 LazyVStack{
                     ForEach(vm.selectedFeed!.comments,id: \.id){comment in
-                        EachComment(comment: comment, commentText: $commentText,editingComment: _editingComment) { commentId in
+                        EachComment(comment: comment, commentText: $commentText,editingComment: _editingComment,editingCommentId: $editingCommentId) { commentId in
                             onDeleteComment?(commentId)
                         }
                     }
@@ -109,13 +112,14 @@ extension CommentsSheet {
         HStack{
             NetworkImageProfile(imageUrlInString: AppConstants.dummyModelProfile, imageHeight: 40, imageWidth: 40)
             TextField("Add a comment...", text: $commentText)
-                .focused($editingComment)
+                .focused($isTextfieldFocused)
                 .overlay {
-                    if !commentText.isEmpty {
+                    if !commentText.isEmpty  {
                         HStack(){
                             Spacer()
                             Button{
-                                editingComment ? onUpdateComment?(commentText,1) : onAddComment?(commentText)
+                                superPrint(editingComment)
+                                editingComment ? onUpdateComment?(commentText, editingCommentId ?? 0) : onAddComment?(commentText)
                                 commentText = ""
                             }label: {
                                 Image(systemName: "arrow.up.circle.fill")
@@ -157,7 +161,8 @@ struct EachComment : View {
     @Binding var commentText : String
     @EnvironmentObject private var profileVM : ProfileViewModel
     @EnvironmentObject private var vm : FeedsViewModel
-    @FocusState var editingComment
+    @Binding var editingComment : Bool
+    @Binding var editingCommentId : Int?
     var onDeleteComment : ((Int) -> Void)?
     var body: some View {
         HStack{
@@ -217,9 +222,10 @@ struct EachComment : View {
             Button{
                 commentText = comment.content
                 editingComment = true
+                editingCommentId = comment.id
             }label: {
                 Text("Edit")
-                Image(systemName: "pencil")
+                Image(systemName: "pencil") 
             }
             
             Button(role : .destructive){
